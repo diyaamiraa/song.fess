@@ -4,10 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Song Fess - Kirim Lagu & Pesan Anonim</title>
-    <!-- Menggunakan font estetik dari Google Fonts -->
     <link href="https://googleapis.com" rel="stylesheet">
     
-    <!-- KODE DESAIN WARNA (CSS) SUDAH DIGABUNG DI SINI AGAR TIDAK POLOS -->
     <style>
         * {
             margin: 0;
@@ -20,10 +18,10 @@
             background: linear-gradient(135deg, #0f0c20 0%, #15102a 100%);
             color: #ffffff;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            padding: 20px;
+            padding: 40px 20px;
         }
 
         .container {
@@ -33,8 +31,9 @@
             padding: 40px 30px;
             border-radius: 20px;
             width: 100%;
-            max-width: 480px;
+            max-width: 550px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            margin-bottom: 40px;
         }
 
         .header {
@@ -96,10 +95,6 @@
             box-shadow: 0 0 10px rgba(29, 185, 84, 0.2);
         }
 
-        .input-group textarea {
-            resize: none;
-        }
-
         .btn-submit {
             background: #1db954;
             color: #ffffff;
@@ -117,64 +112,184 @@
         .btn-submit:hover {
             background: #1ed760;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(29, 185, 84, 0.6);
         }
 
-        .btn-submit:active {
-            transform: translateY(0);
+        /* STRUKTUR BERANDA / TIMELINE BUBBLE */
+        .timeline-container {
+            width: 100%;
+            max-width: 550px;
         }
 
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 0.75rem;
-            color: #666;
+        .timeline-title {
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            color: #1db954;
+            border-bottom: 2px solid rgba(29, 185, 84, 0.3);
+            padding-bottom: 10px;
+        }
+
+        .message-wall {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .bubble {
+            background: rgba(255, 255, 255, 0.08);
+            border-left: 5px solid #1db954;
+            padding: 20px;
+            border-radius: 0 15px 15px 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            animation: fadeIn 0.5s ease;
+        }
+
+        .bubble-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #1db954;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .bubble-song {
+            background: rgba(29, 185, 84, 0.15);
+            color: #1ed760;
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .bubble-text {
+            font-size: 0.95rem;
+            color: #e0e0e0;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
 
+    <!-- 1. BAGIAN FORM KIRIM PESAN -->
     <div class="container">
         <div class="header">
             <h1>🎵 Song Fess</h1>
             <p>Sampaikan perasaanmu lewat lagu secara rahasia.</p>
         </div>
 
-        <!-- Formulir Pengiriman Pesan (Bisa dihubungkan ke Formspree nanti) -->
-        <form action="https://formspree.io" method="POST" class="fess-form">
-            
-            <!-- FORMAT 1: FROM -->
+        <form id="songfessForm" class="fess-form">
             <div class="input-group">
                 <label for="from">From (Pengirim)</label>
-                <input type="text" id="from" name="From" placeholder="Contoh: Anonim / Rahasia" required>
+                <input type="text" id="from" placeholder="Contoh: Anonim / Rahasia" required>
             </div>
 
-            <!-- FORMAT 2: TO -->
             <div class="input-group">
                 <label for="to">To (Untuk Siapa)</label>
-                <input type="text" id="to" name="To" placeholder="Nama si dia..." required>
+                <input type="text" id="to" placeholder="Nama si dia..." required>
             </div>
 
-            <!-- FORMAT 3: SONG (DIKETIK MANUAL) -->
             <div class="input-group">
                 <label for="song">Song (Lagu & Penyanyi)</label>
-                <input type="text" id="song" name="Song" placeholder="Contoh: Hindia - Evaluasi" required>
+                <input type="text" id="song" placeholder="Contoh: Hindia - Evaluasi" required>
             </div>
 
-            <!-- FORMAT 4: MESSAGE -->
             <div class="input-group">
                 <label for="message">Message (Pesan)</label>
-                <textarea id="message" name="Message" rows="5" placeholder="Tuliskan semua perasaanmu di sini..." required></textarea>
+                <textarea id="message" rows="4" placeholder="Tuliskan semua perasaanmu di sini..." required></textarea>
             </div>
 
-            <!-- TOMBOL KIRIM -->
             <button type="submit" class="btn-submit">🚀 Send the Song</button>
         </form>
+    </div>
 
-        <div class="footer">
-            <p>&copy; 2026 Song Fess Platform. Made with 🤍</p>
+    <!-- 2. BAGIAN BERANDA / TIMELINE UTK BACA PESAN -->
+    <div class="timeline-container">
+        <h2 class="timeline-title">📩 Beranda Menfess Terkini</h2>
+        <div id="messageWall" class="message-wall">
+            <!-- Bubble pesan orang-orang akan otomatis muncul di sini -->
         </div>
     </div>
+
+    <!-- KODE JAVASCRIPT UNTUK SIMULASI MENYIMPAN DAN MENAMPILKAN PESAN -->
+    <script>
+        const form = document.getElementById('songfessForm');
+        const messageWall = document.getElementById('messageWall');
+
+        // Fungsi menampilkan pesan ke layar
+        function displayMessages() {
+            messageWall.innerHTML = '';
+            // Mengambil data pesan yang tersimpan di browser
+            const messages = JSON.parse(localStorage.getItem('songfess_data')) || [];
+            
+            if(messages.length === 0) {
+                messageWall.innerHTML = '<p style="text-align:center; color:#666;">Belum ada pesan dikirim. Jadilah yang pertama!</p>';
+                return;
+            }
+
+            // Tampilkan pesan paling baru di atas
+            messages.reverse().forEach(data => {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                bubble.innerHTML = `
+                    <div class="bubble-meta">
+                        <span>Dari: ${escapeHTML(data.from)}</span>
+                        <span>Untuk: ${escapeHTML(data.to)}</span>
+                    </div>
+                    <div class="bubble-song">🎵 ${escapeHTML(data.song)}</div>
+                    <p class="bubble-text">${escapeHTML(data.message)}</p>
+                `;
+                messageWall.appendChild(bubble);
+            });
+        }
+
+        // Fungsi mengamankan teks dari hacker/script jahat (XSS)
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, 
+                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+            );
+        }
+
+        // Event saat tombol "Send the Song" ditekan
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const fromVal = document.getElementById('from').value;
+            const toVal = document.getElementById('to').value;
+            const songVal = document.getElementById('song').value;
+            const messageVal = document.getElementById('message').value;
+
+            const newMessage = {
+                from: fromVal,
+                to: toVal,
+                song: songVal,
+                message: messageVal
+            };
+
+            // Simpan ke LocalStorage browser
+            const currentMessages = JSON.parse(localStorage.getItem('songfess_data')) || [];
+            currentMessages.push(newMessage);
+            localStorage.setItem('songfess_data', JSON.stringify(currentMessages));
+
+            // Reset form input setelah kirim
+            form.reset();
+
+            // Refresh halaman beranda bubble chat
+            displayMessages();
+            
+            alert('Pesan Song Fess berhasil dikirim ke Beranda!');
+        });
+
+        // Jalankan fungsi saat web pertama kali dibuka
+        displayMessages();
+    </script>
 
 </body>
 </html>
