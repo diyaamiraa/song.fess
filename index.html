@@ -24,7 +24,6 @@
             padding: 20px;
         }
 
-        /* BOX TEMPAT TAMPILAN GAMBAR DI ATAS */
         .image-container {
             margin: 20px 0;
             text-align: center;
@@ -33,7 +32,7 @@
             align-items: center;
             justify-content: center;
             position: relative;
-            z-index: 1; /* Mencegah gambar menutupi tombol menu */
+            z-index: 1;
         }
 
         .dynamic-img {
@@ -44,7 +43,6 @@
             box-shadow: 0 8px 25px rgba(0,0,0,0.4);
         }
 
-        /* BAR NAVIGASI MENU BUTTONS */
         .nav-menu {
             display: flex;
             gap: 15px;
@@ -55,7 +53,7 @@
             margin-bottom: 35px;
             backdrop-filter: blur(5px);
             position: relative;
-            z-index: 10; /* Menjamin menu berada paling depan agar bisa diklik */
+            z-index: 10;
         }
 
         .menu-btn {
@@ -80,7 +78,6 @@
             box-shadow: 0 4px 12px rgba(29, 185, 84, 0.3);
         }
 
-        /* LAYOUT HALAMAN KONTEN */
         .page-content {
             width: 100%;
             max-width: 520px;
@@ -159,7 +156,6 @@
 
         .btn-submit:hover { background: #1ed760; }
 
-        /* BUBBLE TIMELINE CHAT */
         .message-wall {
             display: flex;
             flex-direction: column;
@@ -195,7 +191,6 @@
             margin-bottom: 8px;
         }
 
-        /* TOMBOL HAPUS BUBBLE */
         .btn-delete {
             position: absolute;
             top: 15px;
@@ -219,55 +214,6 @@
     </style>
 </head>
 <body>
-
-    <!-- 1. KOTAK TEMPAT GAMBAR DINAMIS -->
-    <div class="image-container">
-        <!-- Default awal diisi langsung dengan Link Gambar Kucing "Hi" yang asli -->
-        <img id="statusImage" src="https://phototourl.com" alt="Status" class="dynamic-img">
-    </div>
-
-    <!-- 2. BAR MENU PILIHAN -->
-    <div class="nav-menu">
-        <button id="btnKirim" class="menu-btn" onclick="switchPage('kirim')">📝 Kirim Pesan</button>
-        <button id="btnLihat" class="menu-btn" onclick="switchPage('lihat')">📩 Lihat Bubble</button>
-    </div>
-
-    <!-- HALAMAN OPSI 1: FORM KIRIM PESAN -->
-    <div id="pageKirim" class="page-content">
-        <div class="container">
-            <h2 class="header-title">🎵 Send a Songfess</h2>
-            <form id="songfessForm" class="fess-form">
-                <div class="input-group">
-                    <label>From (Pengirim)</label>
-                    <input type="text" id="from" placeholder="Anonim / Rahasia" required>
-                </div>
-                <div class="input-group">
-                    <label>To (Untuk Siapa)</label>
-                    <input type="text" id="to" placeholder="Nama target si dia..." required>
-                </div>
-                <div class="input-group">
-                    <label>Song (Lagu & Artis)</label>
-                    <input type="text" id="song" placeholder="Contoh: Hindia - Evaluasi" required>
-                </div>
-                <div class="input-group">
-                    <label>Message (Pesan Rahasia)</label>
-                    <textarea id="message" rows="4" placeholder="Tulis ungkapan hatimu..." required></textarea>
-                </div>
-                <button type="submit" class="btn-submit">🚀 Send the Song</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- HALAMAN OPSI 2: BERANDA TIMELINE BUBBLE CHAT -->
-    <div id="pageLihat" class="page-content">
-        <div class="container">
-            <h2 class="header-title" style="color: #1ed760;">📩 Timeline Menfess</h2>
-            <div id="messageWall" class="message-wall">
-                <!-- Bubble otomatis diisi lewat JavaScript -->
-            </div>
-        </div>
-    </div>
-
     <script>
         const statusImage = document.getElementById('statusImage');
         const pageKirim = document.getElementById('pageKirim');
@@ -276,15 +222,13 @@
         const btnLihat = document.getElementById('btnLihat');
         const form = document.getElementById('songfessForm');
 
-        // VARIABEL LINK GAMBAR YANG SUDAH TERINTEGRASI ASLI
-        const imgHi = "https://phototourl.com"; // Kucing Hi
-        const imgCat = "https://squarespace-cdn.com"; // Kucing You Can Do This (Cadangan Sementara)
-        const imgMinion = "https://cdn.phototourl.com/member/2026-11-10-39ad4ef4-c4ab-405a-b32a-1e93b0762857.jpg"; // Minion How Bro Felt
+        // DAFTAR ALAMAT URL GAMBAR ASLI ANDA
+        const imgHi = "https://phototourl.com"; 
+        const imgCat = "https://unsplash.com"; 
+        const imgMinion = "https://phototourl.com"; 
 
-        // Memastikan gambar pertama langsung tampil secara fisik sejak awal
         statusImage.src = imgHi;
 
-        // FUNGSI GANTI HALAMAN OPSI MENU
         function switchPage(target) {
             btnKirim.classList.remove('active');
             btnLihat.classList.remove('active');
@@ -294,7 +238,7 @@
             if (target === 'kirim') {
                 pageKirim.classList.add('visible');
                 btnKirim.classList.add('active');
-                statusImage.src = imgCat; // Mengubah tampilan gambar ke Kucing "You Can Do This"
+                statusImage.src = imgCat; 
             } else if (target === 'lihat') {
                 pageLihat.classList.add('visible');
                 btnLihat.classList.add('active');
@@ -302,3 +246,62 @@
             }
         }
 
+        function displayMessages() {
+            const messageWall = document.getElementById('messageWall');
+            messageWall.innerHTML = '';
+            const messages = JSON.parse(localStorage.getItem('songfess_data')) || [];
+            if(messages.length === 0) {
+                messageWall.innerHTML = '<p style="text-align:center; color:#888; font-size: 0.9rem;">Belum ada pesan fess masuk.</p>';
+                return;
+            }
+
+            messages.slice().reverse().forEach((data, index) => {
+                const originalIndex = messages.length - 1 - index; 
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                bubble.innerHTML = `
+                    <button class="btn-delete" onclick="deleteMessage(${originalIndex})" title="Hapus pesan saya">🗑️</button>
+                    <div class="bubble-meta">
+                        <span>Dari: ${escapeHTML(data.from)}</span>
+                        <span>Untuk: ${escapeHTML(data.to)}</span>
+                    </div>
+                    <div class="bubble-song">🎵 ${escapeHTML(data.song)}</div>
+                    <p style="color:#e0e0e0; font-size:0.95rem; line-height:1.4; word-wrap:break-word;">${escapeHTML(data.message)}</p>
+                `;
+                messageWall.appendChild(bubble);
+            });
+        }
+
+        function deleteMessage(index) {
+            if (confirm("Apakah Anda yakin ingin menghapus bubble pesan ini?")) {
+                let currentMessages = JSON.parse(localStorage.getItem('songfess_data')) || [];
+                currentMessages.splice(index, 1);
+                localStorage.setItem('songfess_data', JSON.stringify(currentMessages));
+                displayMessages();
+            }
+        }
+
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+        }
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const fromVal = document.getElementById('from').value;
+            const toVal = document.getElementById('to').value;
+            const songVal = document.getElementById('song').value;
+            const messageVal = document.getElementById('message').value;
+
+            const newMessage = { from: fromVal, to: toVal, song: songVal, message: messageVal };
+            const currentMessages = JSON.parse(localStorage.getItem('songfess_data')) || [];
+            currentMessages.push(newMessage);
+            localStorage.setItem('songfess_data', JSON.stringify(currentMessages));
+
+            form.reset(); 
+            statusImage.src = imgMinion;
+            alert('Pesan Song Fess Terkirim! Silakan cek menu "Lihat Bubble".');
+        });
+    </script>
+</body>
+</html>
