@@ -3,179 +3,293 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Songfess Beranda Publik</title>
-    <!-- Menggunakan Tailwind CSS untuk tampilan modern -->
-    <script src="https://jsdelivr.net"></script>
+    <title>Song Fess - Kirim Lagu & Pesan Anonim</title>
+    <link href="https://googleapis.com" rel="stylesheet">
+    
     <style>
-        /* Animasi masuk untuk bubble pesan baru */
-        .bubble-entry {
-            animation: popIn 0.3s ease-out forwards;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
         }
-        @keyframes popIn {
-            0% { transform: scale(0.8); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
+
+        body {
+            background: linear-gradient(135deg, #0f0c20 0%, #15102a 100%);
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 40px 30px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 550px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            margin-bottom: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: linear-gradient(45deg, #1db954, #1ed760);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            font-size: 0.9rem;
+            color: #b3b3b3;
+            margin-top: 5px;
+        }
+
+        .fess-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #1db954;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group input, 
+        .input-group textarea {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 15px;
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus, 
+        .input-group textarea:focus {
+            border-color: #1db954;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 10px rgba(29, 185, 84, 0.2);
+        }
+
+        .btn-submit {
+            background: #1db954;
+            color: #ffffff;
+            border: none;
+            padding: 15px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(29, 185, 84, 0.4);
+        }
+
+        .btn-submit:hover {
+            background: #1ed760;
+            transform: translateY(-2px);
+        }
+
+        /* STRUKTUR BERANDA / TIMELINE BUBBLE */
+        .timeline-container {
+            width: 100%;
+            max-width: 550px;
+        }
+
+        .timeline-title {
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            color: #1db954;
+            border-bottom: 2px solid rgba(29, 185, 84, 0.3);
+            padding-bottom: 10px;
+        }
+
+        .message-wall {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .bubble {
+            background: rgba(255, 255, 255, 0.08);
+            border-left: 5px solid #1db954;
+            padding: 20px;
+            border-radius: 0 15px 15px 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            animation: fadeIn 0.5s ease;
+        }
+
+        .bubble-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #1db954;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .bubble-song {
+            background: rgba(29, 185, 84, 0.15);
+            color: #1ed760;
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .bubble-text {
+            font-size: 0.95rem;
+            color: #e0e0e0;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen font-sans">
+<body>
 
-    <!-- NAVIGASI & HEADER -->
-    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50 px-4 py-4">
-        <div class="max-w-5xl mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold tracking-wider text-indigo-400">🎵 Songfess.io</h1>
-            <a href="#kirim-form" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-full text-sm transition">
-                + Kirim Songfess
-            </a>
+    <!-- 1. BAGIAN FORM KIRIM PESAN -->
+    <div class="container">
+        <div class="header">
+            <h1>🎵 Song Fess</h1>
+            <p>Sampaikan perasaanmu lewat lagu secara rahasia.</p>
         </div>
-    </header>
 
-    <main class="max-w-5xl mx-auto px-4 py-8 space-y-12">
-
-        <!-- FORM KIRIM SONGFESS -->
-        <section id="kirim-form" class="max-w-md mx-auto bg-slate-800 border border-slate-700 p-6 rounded-2xl shadow-xl">
-            <h2 class="text-xl font-semibold mb-4 text-center">Kirim Pesan Anonim</h2>
-            <form id="songfessForm" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Rekomendasi Lagu</label>
-                    <input type="text" id="songInput" placeholder="Contoh: Rintik Hujan - HIVI!" required
-                        class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Pesan Rahasia</label>
-                    <textarea id="messageInput" rows="3" placeholder="Tulis ungkapan hatimu di sini..." required
-                        class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500 resize-none"></textarea>
-                </div>
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 font-semibold py-2.5 rounded-lg text-sm transition">
-                    Terbangkan Pesan 🚀
-                </button>
-            </form>
-        </section>
-
-        <!-- BERANDA BUBBLE PESAN (PUBLIK) -->
-        <section>
-            <div class="text-center mb-8">
-                <h2 class="text-2xl font-bold">Beranda Songfess</h2>
-                <p class="text-sm text-slate-400 mt-1">Semua orang bisa melihat dan membaca pesan di bawah ini secara anonim.</p>
+        <form id="songfessForm" class="fess-form">
+            <div class="input-group">
+                <label for="from">From (Pengirim)</label>
+                <input type="text" id="from" placeholder="Contoh: Anonim / Rahasia" required>
             </div>
 
-            <!-- Container Grid tempat menampung Bubble Pesan -->
-            <div id="berandaBubble" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Data dummy jika kosong (akan diganti otomatis oleh JavaScript) -->
-                <div class="col-span-full text-center text-slate-500 py-12" id="emptyState">
-                    Belum ada songfess saat ini. Jadilah yang pertama!
-                </div>
+            <div class="input-group">
+                <label for="to">To (Untuk Siapa)</label>
+                <input type="text" id="to" placeholder="Nama si dia..." required>
             </div>
-        </section>
 
-    </main>
+            <div class="input-group">
+                <label for="song">Song (Lagu & Penyanyi)</label>
+                <input type="text" id="song" placeholder="Contoh: Hindia - Evaluasi" required>
+            </div>
 
-    <!-- LOGIC JAVASCRIPT -->
+            <div class="input-group">
+                <label for="message">Message (Pesan)</label>
+                <textarea id="message" rows="4" placeholder="Tuliskan semua perasaanmu di sini..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit">🚀 Send the Song</button>
+        </form>
+    </div>
+
+    <!-- 2. BAGIAN BERANDA / TIMELINE UTK BACA PESAN -->
+    <div class="timeline-container">
+        <h2 class="timeline-title">📩 Beranda Menfess Terkini</h2>
+        <div id="messageWall" class="message-wall">
+            <!-- Bubble pesan orang-orang akan otomatis muncul di sini -->
+        </div>
+    </div>
+
+    <!-- KODE JAVASCRIPT UNTUK SIMULASI MENYIMPAN DAN MENAMPILKAN PESAN -->
     <script>
-        // 1. Generate Token Unik Pengirim (disimpan di LocalStorage browser)
-        // Ini berfungsi agar user bisa menghapus pesannya sendiri tanpa perlu login/akun.
-        if (!localStorage.getItem('user_token')) {
-            localStorage.setItem('user_token', 'user_' + Math.random().toString(36).substr(2, 9));
-        }
-        const currentUserToken = localStorage.getItem('user_token');
+        const form = document.getElementById('songfessForm');
+        const messageWall = document.getElementById('messageWall');
 
-        // 2. Simulasi Database Array (Jika pakai Firebase/Supabase, ini diganti dengan fetch data realtime)
-        let databaseSongfess = [
-            {
-                id: "msg_1",
-                lagu: "Sial - Mahalini",
-                pesan: "Buat kamu yang tadi duduk di pojokan perpus pakai jaket denim. Keren banget, tapi sayang gak berani kenalan.",
-                token: "token_orang_lain"
-            },
-            {
-                id: "msg_2",
-                lagu: "Perfect - Ed Sheeran",
-                pesan: "Semoga kamu sadar ya kalau lagu ini selalu aku putar tiap inget kamu. Kapan-kapan jalan bareng yuk?",
-                token: "token_orang_lain"
-            }
-        ];
-
-        // 3. Fungsi untuk Menampilkan Pesan ke Beranda (Render)
-        function renderBeranda() {
-            const container = document.getElementById('berandaBubble');
-            const emptyState = document.getElementById('emptyState');
+        // Fungsi menampilkan pesan ke layar
+        function displayMessages() {
+            messageWall.innerHTML = '';
+            // Mengambil data pesan yang tersimpan di browser
+            const messages = JSON.parse(localStorage.getItem('songfess_data')) || [];
             
-            // Hapus isi bubble lama (kecuali empty state jika dibutuhkan)
-            container.innerHTML = '';
-
-            if (databaseSongfess.length === 0) {
-                container.appendChild(emptyState);
+            if(messages.length === 0) {
+                messageWall.innerHTML = '<p style="text-align:center; color:#666;">Belum ada pesan dikirim. Jadilah yang pertama!</p>';
                 return;
             }
 
-            databaseSongfess.forEach(item => {
-                // Cek apakah pesan ini milik user saat ini
-                const isMyMessage = item.token === currentUserToken;
-
-                // Buat elemen bubble card
+            // Tampilkan pesan paling baru di atas
+            messages.reverse().forEach(data => {
                 const bubble = document.createElement('div');
-                bubble.className = "bg-slate-800 border border-slate-700/60 p-5 rounded-2xl relative flex flex-col justify-between bubble-entry shadow-md hover:border-slate-600 transition duration-200";
-                
+                bubble.className = 'bubble';
                 bubble.innerHTML = `
-                    <div>
-                        <div class="flex items-center gap-2 text-xs font-medium bg-slate-900 border border-slate-700 w-fit px-2.5 py-1 rounded-full text-indigo-400 mb-3">
-                            🎵 <span>${item.lagu}</span>
-                        </div>
-                        <p class="text-sm text-slate-300 leading-relaxed italic">"${item.pesan}"</p>
+                    <div class="bubble-meta">
+                        <span>Dari: ${escapeHTML(data.from)}</span>
+                        <span>Untuk: ${escapeHTML(data.to)}</span>
                     </div>
-                    <div class="mt-4 flex justify-between items-center border-t border-slate-700/50 pt-3">
-                        <span class="text-[11px] text-slate-500">Baru saja</span>
-                        ${isMyMessage ? `
-                            <button onclick="hapusPesan('${item.id}')" class="text-xs text-rose-400 hover:text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 px-2.5 py-1 rounded-md transition font-medium flex items-center gap-1">
-                                🗑️ Hapus Bubble
-                            </button>
-                        ` : ''}
-                    </div>
+                    <div class="bubble-song">🎵 ${escapeHTML(data.song)}</div>
+                    <p class="bubble-text">${escapeHTML(data.message)}</p>
                 `;
-                container.appendChild(bubble);
+                messageWall.appendChild(bubble);
             });
         }
 
-        // 4. Handle Event Kirim Form
-        document.getElementById('songfessForm').addEventListener('submit', function(e) {
+        // Fungsi mengamankan teks dari hacker/script jahat (XSS)
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, 
+                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+            );
+        }
+
+        // Event saat tombol "Send the Song" ditekan
+        form.addEventListener('submit', function(e) {
             e.preventDefault();
+
+            const fromVal = document.getElementById('from').value;
+            const toVal = document.getElementById('to').value;
+            const songVal = document.getElementById('song').value;
+            const messageVal = document.getElementById('message').value;
+
+            const newMessage = {
+                from: fromVal,
+                to: toVal,
+                song: songVal,
+                message: messageVal
+            };
+
+            // Simpan ke LocalStorage browser
+            const currentMessages = JSON.parse(localStorage.getItem('songfess_data')) || [];
+            currentMessages.push(newMessage);
+            localStorage.setItem('songfess_data', JSON.stringify(currentMessages));
+
+            // Reset form input setelah kirim
+            form.reset();
+
+            // Refresh halaman beranda bubble chat
+            displayMessages();
             
-            const lagu = document.getElementById('songInput').value;
-            const pesan = document.getElementById('messageInput').value;
-            const idBaru = 'msg_' + Date.now();
-
-            // Masukkan data baru ke database (simulasi)
-            databaseSongfess.unshift({
-                id: idBaru,
-                lagu: lagu,
-                pesan: pesan,
-                token: currentUserToken // Token kamu disimpan di sini
-            });
-
-            // Reset Form input
-            document.getElementById('songInput').value = '';
-            document.getElementById('messageInput').value = '';
-
-            // Render ulang beranda agar bubble langsung muncul di paling atas
-            renderBeranda();
-
-            // Scroll mulus otomatis ke bagian beranda
-            document.getElementById('berandaBubble').scrollIntoView({ behavior: 'smooth' });
+            alert('Pesan Song Fess berhasil dikirim ke Beranda!');
         });
 
-        // 5. Fungsi Fitur Hapus Bubble Pesan
-        function hapusPesan(idPesan) {
-            // Konfirmasi hapus demi keamanan
-            if(confirm("Apakah kamu yakin ingin menghapus bubble songfess ini?")) {
-                // Cari index pesan dan hapus dari array database
-                databaseSongfess = databaseSongfess.filter(item => item.id !== idPesan);
-                
-                // Render ulang tampilan beranda
-                renderBeranda();
-            }
-        }
-
-        // Jalankan render beranda saat pertama kali web dibuka
-        renderBeranda();
+        // Jalankan fungsi saat web pertama kali dibuka
+        displayMessages();
     </script>
+
 </body>
 </html>
