@@ -3,174 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Songfess Bubble Wall</title>
-    <!-- Menggunakan Tailwind CSS untuk tampilan yang modern dan bagus -->
+    <title>Song Fess - Sampaikan Perasaanmu</title>
+    <!-- Menggunakan Tailwind CSS untuk mempermudah styling -->
     <script src="https://tailwindcss.com"></script>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background-color: #000000;
         }
-        /* Efek animasi untuk bubble chat baru */
+        /* Custom border warna emas tipis sesuai gambar */
+        .custom-border {
+            border: 1px solid rgba(212, 175, 55, 0.4);
+        }
+        .custom-border:focus-within {
+            border: 1px solid rgba(212, 175, 55, 1);
+        }
+        /* Animasi pop up lembut untuk bubble pesan baru */
         .bubble-anim {
             animation: popUp 0.4s ease-out forwards;
         }
         @keyframes popUp {
-            0% { transform: scale(0.8); opacity: 0; }
+            0% { transform: scale(0.95); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
         }
     </style>
 </head>
-<body class="min-h-screen text-gray-800">
+<body class="text-white min-h-screen pb-12">
 
-    <!-- NAVBAR -->
-    <nav class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-200">
-        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
-            <h1 class="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">
-                🎵 SongfessBubble
-            </h1>
-            <a href="#kirim-pesan" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-full text-sm font-medium transition duration-300 shadow-md">
-                Kirim Menfess
-            </a>
-        </div>
-    </nav>
-
-    <!-- MAIN CONTAINER -->
-    <main class="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        <!-- KOLOM KIRI: FORM KIRIM PESAN -->
-        <div id="kirim-pesan" class="lg:col-span-1">
-            <div class="bg-white p-6 rounded-2xl shadow-xl sticky top-20 border border-gray-100">
-                <h2 class="text-xl font-bold mb-2 text-purple-700">Kirim Pesan Anonim</h2>
-                <p class="text-xs text-gray-500 mb-6">Bagikan lagu favorit atau pesan rahasiamu. Semua orang bisa melihatnya secara anonim!</p>
-                
-                <form id="songfessForm" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Judul Lagu / Penyanyi</label>
-                        <input type="text" id="songInput" required placeholder="Contoh: Cinta Luar Biasa - Andmesh" 
-                            class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:outline-none transition">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Pesan Anonim</label>
-                        <textarea id="messageInput" required rows="4" placeholder="Tulis pesan rahasiamu di sini..." 
-                            class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:outline-none transition resize-none"></textarea>
-                    </div>
-                    <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-semibold py-3 rounded-xl shadow-lg transition duration-300 transform active:scale-95">
-                        Kirim ke Beranda ✨
-                    </button>
-                </form>
-            </div>
-        </div>
-
-        <!-- KOLOM KANAN: BERANDA BUBBLE PESAN (PUBLIK) -->
-        <div class="lg:col-span-2">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-gray-800">Beranda Pesan</h2>
-                <span id="totalPesan" class="bg-purple-100 text-purple-800 text-xs font-semibold px-3 py-1 rounded-full">0 Pesan</span>
+    <!-- MAIN CONTAINER FORM (Sesuai Gambar) -->
+    <div class="max-w-xl mx-auto mt-10 px-4">
+        <div class="border border-zinc-700/60 rounded-2xl p-6 md:p-8 bg-zinc-950/40 backdrop-blur-sm">
+            
+            <!-- HEADER -->
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold flex items-center justify-center gap-2 tracking-wide">
+                    <span>♪</span> Song Fess
+                </h1>
+                <p class="text-xs text-zinc-400 mt-1">Sampaikan perasaanmu lewat lagu secara rahasia.</p>
             </div>
 
-            <!-- Wadah Bubble Chat -->
-            <div id="bubbleWall" class="space-y-4 max-h-[80vh] overflow-y-auto pr-2">
-                <!-- Pesan akan muncul di sini secara dinamis -->
-            </div>
+            <!-- FORM INPUT -->
+            <form id="songfessForm" class="space-y-5">
+                <!-- FROM -->
+                <div>
+                    <label class="block text-xs font-bold tracking-wider text-zinc-300 uppercase mb-1.5">From (Pengirim)</label>
+                    <input type="text" id="fromInput" required placeholder="Contoh: Anonim / Rahasia" 
+                        class="w-full bg-black text-sm text-zinc-200 px-4 py-3 rounded-xl border border-zinc-700 focus:outline-none focus:border-yellow-500/70 transition">
+                </div>
+
+                <!-- TO -->
+                <div>
+                    <label class="block text-xs font-bold tracking-wider text-zinc-300 uppercase mb-1.5">To (Untuk Siapa)</label>
+                    <input type="text" id="toInput" required placeholder="Nama si dia..." 
+                        class="w-full bg-black text-sm text-zinc-200 px-4 py-3 rounded-xl border border-zinc-700 focus:outline-none focus:border-yellow-500/70 transition">
+                </div>
+
+                <!-- SONG -->
+                <div>
+                    <label class="block text-xs font-bold tracking-wider text-zinc-300 uppercase mb-1.5">Song (Lagu & Penyanyi)</label>
+                    <input type="text" id="songInput" required placeholder="Contoh: Hindia - Evaluasi" 
+                        class="w-full bg-black text-sm text-zinc-200 px-4 py-3 rounded-xl border border-zinc-700 focus:outline-none focus:border-yellow-500/70 transition">
+                </div>
+
+                <!-- MESSAGE -->
+                <div>
+                    <label class="block text-xs font-bold tracking-wider text-zinc-300 uppercase mb-1.5">Message (Pesan)</label>
+                    <textarea id="messageInput" required rows="4" placeholder="Tuliskan semua perasaanmu di sini..." 
+                        class="w-full bg-black text-sm text-zinc-200 px-4 py-3 rounded-xl border border-zinc-700 focus:outline-none focus:border-yellow-500/70 transition resize-none"></textarea>
+                </div>
+
+                <!-- SUBMIT BUTTON -->
+                <button type="submit" class="w-full text-yellow-400 font-semibold text-sm py-3 mt-2 flex items-center justify-center gap-2 hover:text-yellow-300 active:scale-95 transition">
+                    📌 Send the Song
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- BERANDA MENFESS TERKINI (PUBLIK) -->
+    <div class="max-w-2xl mx-auto mt-12 px-4">
+        <div class="flex items-center justify-between border-b border-zinc-800 pb-3 mb-6">
+            <h2 class="text-lg font-bold tracking-wide flex items-center gap-2">
+                ✉ Beranda Menfess Terkini
+            </h2>
+            <span id="totalPesan" class="text-xs bg-zinc-800 text-zinc-400 px-2.5 py-1 rounded-full">0 Pesan</span>
         </div>
 
-    </main>
+        <!-- Wadah Tempat Tumpukan Bubble Chat Publik -->
+        <div id="bubbleWall" class="space-y-4">
+            <!-- Pesan publik otomatis masuk ke sini melalui JavaScript -->
+        </div>
+    </div>
 
-    <!-- JAVASCRIPT & LOGIKA -->
+    <!-- JAVASCRIPT LOGIKA UTAMA -->
     <script>
         const songfessForm = document.getElementById('songfessForm');
+        const fromInput = document.getElementById('fromInput');
+        const toInput = document.getElementById('toInput');
         const songInput = document.getElementById('songInput');
         const messageInput = document.getElementById('messageInput');
         const bubbleWall = document.getElementById('bubbleWall');
         const totalPesanLabel = document.getElementById('totalPesan');
 
-        // Pilihan warna estetik pastel untuk bubble chat secara acak
-        const bubbleColors = [
-            'bg-purple-50 border-purple-200 text-purple-900',
-            'bg-pink-50 border-pink-200 text-pink-900',
-            'bg-blue-50 border-blue-200 text-blue-900',
-            'bg-indigo-50 border-indigo-200 text-indigo-900',
-            'bg-teal-50 border-teal-200 text-teal-900'
-        ];
-
-        // 1. Fungsi untuk mengambil dan menampilkan pesan dari LocalStorage
+        // Fungsi memuat data dari localStorage agar bersifat persisten di browser
         function loadMessages() {
-            const messages = JSON.parse(localStorage.getItem('songfessMessages')) || [];
+            const messages = JSON.parse(localStorage.getItem('darkSongfessMessages')) || [];
             bubbleWall.innerHTML = '';
             totalPesanLabel.textContent = `${messages.length} Pesan`;
 
             if (messages.length === 0) {
                 bubbleWall.innerHTML = `
-                    <div class="text-center py-12 bg-white/50 backdrop-blur rounded-2xl border-2 border-dashed border-gray-300">
-                        <p class="text-gray-500">Belum ada pesan nih. Jadi yang pertama mengirim!</p>
+                    <div class="text-center py-10 border border-dashed border-zinc-800 rounded-xl">
+                        <p class="text-sm text-zinc-500">Belum ada menfess publik. Yuk jadi yang pertama mengirim!</p>
                     </div>
                 `;
                 return;
             }
 
-            // Tampilkan dari yang paling baru (diatas)
+            // Menampilkan dari kiriman paling baru di posisi atas
             messages.reverse().forEach(data => {
                 const bubble = document.createElement('div');
-                // Mengacak warna bubble
-                const randomColor = bubbleColors[data.colorIndex || 0];
+                bubble.className = "p-5 rounded-xl border border-zinc-800 bg-zinc-950/70 bubble-anim shadow-lg";
                 
-                bubble.className = `p-5 rounded-2xl border shadow-sm bubble-anim ${randomColor}`;
                 bubble.innerHTML = `
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs font-semibold uppercase tracking-wider bg-white/80 px-2 py-0.5 rounded-md shadow-xs text-gray-600">
-                            👤 Anonim
-                        </span>
-                        <span class="text-[10px] text-gray-500">${data.time}</span>
+                    <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-zinc-400 mb-3 border-b border-zinc-900 pb-2">
+                        <div class="flex items-center gap-1.5">
+                            <span class="font-medium text-zinc-300">From:</span>
+                            <span class="text-yellow-400/90 font-semibold bg-zinc-900 px-2 py-0.5 rounded">${data.from}</span>
+                            <span class="font-medium text-zinc-300 ml-1">To:</span>
+                            <span class="text-teal-400 font-semibold bg-zinc-900 px-2 py-0.5 rounded">${data.to}</span>
+                        </div>
+                        <span class="text-[10px] text-zinc-500">${data.time}</span>
                     </div>
-                    <p class="text-base font-medium mb-3 italic">"${data.message}"</p>
-                    <div class="flex items-center gap-2 text-xs bg-white/60 p-2 rounded-xl w-fit">
+                    <p class="text-sm text-zinc-200 leading-relaxed mb-4 italic">"${data.message}"</p>
+                    <div class="inline-flex items-center gap-2 text-xs bg-zinc-900/80 px-3 py-1.5 rounded-lg border border-zinc-800/60 text-zinc-300">
                         <span>🎵</span>
-                        <span class="font-semibold text-gray-700">${data.song}</span>
+                        <span class="font-medium text-zinc-200">${data.song}</span>
                     </div>
                 `;
                 bubbleWall.appendChild(bubble);
             });
         }
 
-        // 2. Fungsi saat User Mengirim Pesan
+        // Fungsi menangkap submit form kirim lagu
         songfessForm.addEventListener('submit', function(e) {
             e.preventDefault();
 
-            const songText = songInput.value.trim();
-            const messageText = messageInput.value.trim();
-            
-            // Format waktu saat ini
+            // Format tanggal & waktu pengiriman
             const now = new Date();
-            const timeString = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' | ' + now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
-
-            // Acak index warna
-            const randomColorIndex = Math.floor(Math.random() * bubbleColors.length);
+            const timeString = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' - ' + now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
 
             const newMessage = {
-                song: songText,
-                message: messageText,
-                time: timeString,
-                colorIndex: randomColorIndex
+                from: fromInput.value.trim(),
+                to: toInput.value.trim(),
+                song: songInput.value.trim(),
+                message: messageInput.value.trim(),
+                time: timeString
             };
 
-            // Simpan ke LocalStorage publik browser
-            const currentMessages = JSON.parse(localStorage.getItem('songfessMessages')) || [];
+            // Simpan ke database lokal browser
+            const currentMessages = JSON.parse(localStorage.getItem('darkSongfessMessages')) || [];
             currentMessages.push(newMessage);
-            localStorage.setItem('songfessMessages', JSON.stringify(currentMessages));
+            localStorage.setItem('darkSongfessMessages', JSON.stringify(currentMessages));
 
-            // Reset Form setelah kirim
+            // Reset semua isi kolom input setelah berhasil terkirim
             songfessForm.reset();
 
-            // Refresh beranda web agar langsung muncul pesan barunya
+            // Refresh tampilan beranda secara real-time
             loadMessages();
-
-            // Scroll otomatis ke atas beranda pesan
-            bubbleWall.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
-        // Jalankan fungsi load pertama kali web dibuka
+        // Panggil fungsi muat pesan saat halaman pertama kali dibuka
         loadMessages();
     </script>
 </body>
