@@ -21,7 +21,7 @@
             align-items: center;
         }
 
-        /* CONTAINER FORM UTAMA (Sesuai Gambar Pertama) */
+        /* CONTAINER FORM UTAMA */
         .form-container {
             width: 100%;
             max-width: 520px;
@@ -66,12 +66,11 @@
             width: 100%;
             background-color: #000000;
             color: #ffffff;
-            border: 1px solid #d4af37; /* Border Kuning Emas Sesuai Gambar */
+            border: 1px solid #d4af37; /* Border Kuning Emas */
             border-radius: 8px;
             padding: 12px 14px;
             font-size: 14px;
             outline: none;
-            transition: border-color 0.2s;
         }
         .form-group input::placeholder, 
         .form-group textarea::placeholder {
@@ -86,7 +85,7 @@
             width: 100%;
             background: none;
             border: none;
-            color: #d4af37; /* Teks Tombol Kuning Emas */
+            color: #d4af37;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
@@ -95,14 +94,13 @@
             align-items: center;
             justify-content: center;
             gap: 6px;
-            transition: color 0.2s;
             margin-top: 10px;
         }
         .btn-submit:hover {
             color: #fff3cc;
         }
 
-        /* BERANDA PESAN (BUBBLE PUBLIK) */
+        /* BERANDA PESAN */
         .beranda-container {
             width: 100%;
             max-width: 520px;
@@ -157,8 +155,9 @@
             border-bottom: 1px solid #161616;
             padding-bottom: 8px;
         }
-        .meta-users span {
-            margin-right: 8px;
+        .meta-users {
+            display: flex;
+            gap: 8px;
         }
         .user-highlight {
             color: #d4af37;
@@ -264,15 +263,17 @@
                 return;
             }
 
-            // Tampilkan dari yang paling baru di paling atas
-            messages.reverse().forEach(data => {
+            // Memperbaiki bug duplikasi/hilang menggunakan .slice().reverse()
+            const reversedMessages = messages.slice().reverse();
+
+            reversedMessages.forEach(data => {
                 const card = document.createElement('div');
                 card.className = "bubble-card";
                 card.innerHTML = `
                     <div class="bubble-meta">
                         <div class="meta-users">
-                            From: <span class="user-highlight">${escapeHtml(data.from)}</span> 
-                            To: <span class="user-highlight">${escapeHtml(data.to)}</span>
+                            <span>From: <span class="user-highlight">${escapeHtml(data.from)}</span></span>
+                            <span>To: <span class="user-highlight">${escapeHtml(data.to)}</span></span>
                         </div>
                         <div>${data.time}</div>
                     </div>
@@ -285,8 +286,8 @@
             });
         }
 
-        // Pengaman karakter HTML agar tidak merusak tampilan web saat diinput teks aneh
         function escapeHtml(text) {
+            if (!text) return '';
             return text
                 .replace(/&/g, "&amp;")
                 .replace(/</g, "&lt;")
@@ -311,3 +312,5 @@
 
             const currentMessages = JSON.parse(localStorage.getItem('pureCssSongfess')) || [];
             currentMessages.push(newMessage);
+            localStorage.setItem('pureCssSongfess', JSON.stringify(currentMessages));
+
