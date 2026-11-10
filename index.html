@@ -3,186 +3,312 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Songfess Hub ✨</title>
-    <!-- Menggunakan Tailwind CSS untuk mempermudah styling -->
-    <script src="https://tailwindcss.com"></script>
+    <title>Songfess - Kirim Pesan Rahasia & Lagu</title>
     <style>
+        /* --- CSS STYLING --- */
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-color: #ec4899;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
         body {
-            background-color: #000000;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
         }
-        /* Custom scrollbar tipis agar estetik */
-        ::-webkit-scrollbar {
-            width: 5px;
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
         }
-        ::-webkit-scrollbar-track {
-            background: #111;
+
+        header h1 {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            margin-bottom: 5px;
+            text-shadow: 0 0 10px rgba(236, 72, 153, 0.3);
         }
-        ::-webkit-scrollbar-thumb {
-            background: #333;
-            border-radius: 10px;
+
+        header p {
+            color: var(--text-muted);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+        }
+
+        /* Form Kirim Pesan */
+        .form-section {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            margin-bottom: 40px;
+            border: 1px solid #334155;
+        }
+
+        .form-section h2 {
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            border-left: 4px solid var(--accent-color);
+            padding-left: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 8px rgba(236, 72, 153, 0.4);
+        }
+
+        textarea {
+            resize: vertical;
+            height: 100px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--accent-color);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #db2777;
+        }
+
+        /* Beranda Pesan (Bubble) */
+        .feed-section h2 {
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            color: var(--text-main);
+        }
+
+        .bubble-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 600px) {
+            .bubble-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .bubble-card {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #334155;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            position: relative;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .bubble-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            border-bottom: 1px dashed #334155;
+            padding-bottom: 8px;
+        }
+
+        .song-tag {
+            background-color: rgba(236, 72, 153, 0.15);
+            color: var(--accent-color);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .song-tag::before {
+            content: "🎵 ";
+            margin-right: 5px;
+        }
+
+        .message-content {
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #e2e8f0;
+            word-wrap: break-word;
+        }
+
+        .no-message {
+            text-align: center;
+            color: var(--text-muted);
+            grid-column: 1 / -1;
+            padding: 40px;
         }
     </style>
 </head>
-<body class="text-white font-sans antialiased pb-20">
+<body>
 
-    <!-- Header / Title Section -->
-    <header class="text-center pt-12 pb-8">
-        <h1 class="text-4xl font-bold flex items-center justify-center gap-3 tracking-wide">
-            🎵 Songfess Hub
-        </h1>
-        <p class="text-gray-400 text-sm mt-3 tracking-wide">
-            Kirim lagu dan pesan rahasiamu secara anonim. Semua orang bisa melihat.
-        </p>
+    <header>
+        <h1>Songfess Menfess</h1>
+        <p>Kirim pesan & lagu secara anonim. Semua orang bisa membaca.</p>
     </header>
 
-    <!-- Main Content Container -->
-    <main class="max-w-4xl mx-auto px-4">
-        
-        <!-- Box Form Kirim Songfess Baru (Sesuai Gambar) -->
-        <section class="border border-gray-800 bg-[#050505] rounded-xl p-8 mb-12 shadow-2xl">
-            <h2 class="text-xl font-bold mb-6 tracking-wide">Kirim Songfess Baru</h2>
-            
-            <form id="songfessForm" class="space-y-6">
-                <!-- Tambahan Input From & To Opsional untuk memenuhi format request awal -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-medium text-gray-400 mb-1.5">Dari (From) - *boleh anonim</label>
-                        <input type="text" id="fromInput" placeholder="Contoh: Secret Admirer" 
-                            class="w-full bg-black border border-gray-800 rounded-lg px-4 py-2.5 text-sm text-gray-300 focus:outline-none focus:border-gray-600 transition">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-gray-400 mb-1.5">Untuk (To)</label>
-                        <input type="text" id="toInput" required placeholder="Contoh: Dia yang di kelas sebelah" 
-                            class="w-full bg-black border border-gray-800 rounded-lg px-4 py-2.5 text-sm text-gray-300 focus:outline-none focus:border-gray-600 transition">
-                    </div>
+    <div class="container">
+        <!-- SEKSI KIRIM PESAN -->
+        <section class="form-section">
+            <h2>Kirim Songfess Baru</h2>
+            <form id="songfessForm">
+                <div class="form-group">
+                    <label for="fromInput">From (Bisa samaran/inisial):</label>
+                    <input type="text" id="fromInput" placeholder="Contoh: Secret Admirer / K" required>
                 </div>
-
-                <!-- Input Judul Lagu (Sesuai Gambar) -->
-                <div>
-                    <label class="block text-xs font-medium text-gray-400 mb-1.5">Judul Lagu & Penyanyi</label>
-                    <input type="text" id="songInput" required placeholder="Contoh: Hindia - Evaluasi" 
-                        class="w-full bg-black border border-gray-800 rounded-lg px-4 py-2.5 text-sm text-gray-300 focus:outline-none focus:border-gray-600 transition">
+                <div class="form-group">
+                    <label for="toInput">To:</label>
+                    <input type="text" id="toInput" placeholder="Contoh: Bunga Kelas sebelah / Dia" required>
                 </div>
-
-                <!-- Input Pesan (Sesuai Gambar) -->
-                <div>
-                    <label class="block text-xs font-medium text-gray-400 mb-1.5">Pesan Anonim Kamu</label>
-                    <textarea id="messageInput" required rows="4" placeholder="Tulis pesanmu di sini untuk seseorang..." 
-                        class="w-full bg-black border border-gray-800 rounded-lg px-4 py-3 text-sm text-gray-300 focus:outline-none focus:border-gray-600 transition resize-none"></textarea>
+                <div class="form-group">
+                    <label for="songInput">Song (Judul & Penyanyi):</label>
+                    <input type="text" id="songInput" placeholder="Contoh: Hati-Hati di Jalan - Tulus" required>
                 </div>
-
-                <!-- Tombol Kirim Kuning (Sesuai Gambar) -->
-                <div class="text-center pt-2">
-                    <button type="submit" 
-                        class="text-[#ffdf65] hover:text-[#ffe893] font-bold text-sm tracking-wide transition duration-200 flex items-center justify-center gap-1.5 mx-auto">
-                        Kirim ke Beranda 🪄
-                    </button>
+                <div class="form-group">
+                    <label for="messageInput">Message:</label>
+                    <textarea id="messageInput" placeholder="Tuliskan pesan rahasiamu di sini..." required></textarea>
                 </div>
+                <button type="submit">Kirim Pesan Publik 🚀</button>
             </form>
         </section>
 
-        <!-- Bagian Beranda Songfess (Sesuai Gambar) -->
-        <section>
-            <h2 class="text-xl font-bold mb-6 flex items-center gap-2 tracking-wide">
-                <span class="text-gray-500 font-light">|</span> Beranda Songfess
-            </h2>
-
-            <!-- Wadah tempat pesan-pesan muncul -->
-            <div id="berandaPesan" class="space-y-4">
-                <!-- Default state seperti di gambar ketika belum ada pesan -->
+        <!-- SEKSI BERANDA PESAN -->
+        <section class="feed-section">
+            <h2>Beranda Songfess Terkini</h2>
+            <div class="bubble-container" id="bubbleContainer">
+                <!-- Pesan akan masuk ke sini melalui Javascript -->
             </div>
         </section>
+    </div>
 
-    </main>
-
+    <!-- --- JAVASCRIPT --- -->
     <script>
-        const form = document.getElementById('songfessForm');
-        const berandaPesan = document.getElementById('berandaPesan');
+        const songfessForm = document.getElementById('songfessForm');
+        const bubbleContainer = document.getElementById('bubbleContainer');
 
-        // Mengambil data dari localStorage browser
+        // Fungsi mengambil pesan dari LocalStorage
         function getMessages() {
-            const messages = localStorage.getItem('songfess_hub_data');
+            const messages = localStorage.getItem('songfess_messages');
             return messages ? JSON.parse(messages) : [];
         }
 
-        // Merender tampilan beranda secara real-time
-        function renderMessages() {
+        // Fungsi menampilkan semua pesan ke beranda
+        function displayMessages() {
             const messages = getMessages();
-            berandaPesan.innerHTML = '';
+            bubbleContainer.innerHTML = ''; // Kosongkan kontainer terlebih dahulu
 
-            // Jika kosong, tampilkan box putus-putus seperti di gambar kamu
             if (messages.length === 0) {
-                berandaPesan.innerHTML = `
-                    <div class="border border-dashed border-gray-800 rounded-lg py-12 text-center text-gray-400 text-sm tracking-wide bg-[#020202]">
-                        Belum ada pesan songfess saat ini. Jadilah yang pertama mengirim!
-                    </div>
-                `;
+                bubbleContainer.innerHTML = '<p class="no-message">Belum ada pesan masuk. Jadilah yang pertama mengirim!</p>';
                 return;
             }
 
-            // Urutkan pesan dari yang paling baru di bagian atas
-            messages.slice().reverse().forEach(data => {
+            // Urutkan dari yang paling baru di atas
+            messages.reverse().forEach(data => {
                 const bubble = document.createElement('div');
-                bubble.className = "border border-gray-800 bg-[#090909] rounded-xl p-6 shadow-md transition duration-200 hover:border-gray-700 relative overflow-hidden";
+                bubble.classList.add('bubble-card');
                 
                 bubble.innerHTML = `
-                    <!-- Tag Metadata Atas -->
-                    <div class="flex flex-wrap gap-2 text-[11px] font-semibold tracking-wider text-gray-400 uppercase mb-3">
-                        <span class="bg-gray-900 border border-gray-800 px-2 py-0.5 rounded">From: ${escapeHTML(data.from)}</span>
-                        <span class="bg-gray-900 border border-gray-800 px-2 py-0.5 rounded text-indigo-400">To: ${escapeHTML(data.to)}</span>
+                    <div class="bubble-header">
+                        <span><strong>From:</strong> ${escapeHTML(data.from)}</span>
+                        <span><strong>To:</strong> ${escapeHTML(data.to)}</span>
                     </div>
-
-                    <!-- Detail Info Lagu -->
-                    <div class="flex items-center gap-2 text-sm font-medium text-[#ffdf65] mb-3">
-                        <span>🎧</span>
-                        <span>${escapeHTML(data.song)}</span>
-                    </div>
-
-                    <!-- Teks Pesan Utama -->
-                    <p class="text-gray-300 text-sm leading-relaxed whitespace-pre-line bg-black/40 p-3 rounded-lg border border-gray-900/60">${escapeHTML(data.message)}</p>
-                    
-                    <!-- Informasi Waktu & Anonim -->
-                    <div class="text-[10px] text-gray-500 mt-4 flex justify-between items-center border-t border-gray-900 pt-2">
-                        <span>🔒 Diposting secara anonim</span>
-                        <span>${data.time}</span>
+                    <div class="song-tag">${escapeHTML(data.song)}</div>
+                    <div class="message-content">
+                        ${escapeHTML(data.message).replace(/\n/g, '<br>')}
                     </div>
                 `;
-                berandaPesan.appendChild(bubble);
+                bubbleContainer.appendChild(bubble);
             });
         }
 
-        // Proses submit form tanpa reload
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const from = document.getElementById('fromInput').value.trim() || 'Anonymous';
-            const to = document.getElementById('toInput').value.trim();
-            const song = document.getElementById('songInput').value.trim();
-            const message = document.getElementById('messageInput').value.trim();
-            
-            // Generate format waktu lokal
-            const now = new Date();
-            const timeString = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' • ' + now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
-
-            const newMessage = { from, to, song, message, time: timeString };
-
-            const currentMessages = getMessages();
-            currentMessages.push(newMessage);
-            localStorage.setItem('songfess_hub_data', JSON.stringify(currentMessages));
-
-            form.reset();
-            renderMessages(); // Segera perbarui tampilan beranda setelah kirim
-        });
-
-        // Anti XSS injection protection
+        // Fungsi mengamankan teks input dari serangan XSS
         function escapeHTML(str) {
             return str.replace(/[&<>'"]/g, 
                 tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
             );
         }
 
-        // Render otomatis saat halaman pertama kali dimuat
-        renderMessages();
+        // Event listener saat form dikirim
+        songfessForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Ambil data nilai dari form
+            const from = document.getElementById('fromInput').value;
+            const to = document.getElementById('toInput').value;
+            const song = document.getElementById('songInput').value;
+            const message = document.getElementById('messageInput').value;
+
+            const newSongfess = { from, to, song, message };
+
+            // Simpan ke array local storage
+            const currentMessages = getMessages();
+            currentMessages.push(newSongfess);
+            localStorage.setItem('songfess_messages', JSON.stringify(currentMessages));
+
+            // Reset form input
+            songfessForm.reset();
+
+            // Refresh beranda tampilan secara instan
+            displayMessages();
+        });
+
+        // Tampilkan pesan pertama kali saat web dibuka
+        displayMessages();
     </script>
 </body>
 </html>
