@@ -3,101 +3,244 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Song Fess - Sampaikan Perasaanmu</title>
-    <!-- Menggunakan Tailwind CSS untuk mempermudah styling -->
-    <script src="https://tailwindcss.com"></script>
-    <link href="https://googleapis.com" rel="stylesheet">
+    <title>Song Fess</title>
     <style>
+        /* RESET & BASE STYLES */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
         body {
-            font-family: 'Poppins', sans-serif;
             background-color: #000000;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        /* Custom border warna emas tipis sesuai gambar */
-        .custom-border {
-            border: 1px solid rgba(212, 175, 55, 0.4);
+
+        /* CONTAINER FORM UTAMA (Sesuai Gambar Pertama) */
+        .form-container {
+            width: 100%;
+            max-width: 520px;
+            border: 1px solid #333333;
+            border-radius: 16px;
+            padding: 30px;
+            background-color: #000000;
+            margin-bottom: 40px;
         }
-        .custom-border:focus-within {
-            border: 1px solid rgba(212, 175, 55, 1);
+
+        /* HEADER */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
         }
-        /* Animasi pop up lembut untuk bubble pesan baru */
-        .bubble-anim {
-            animation: popUp 0.4s ease-out forwards;
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
         }
-        @keyframes popUp {
-            0% { transform: scale(0.95); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
+        .header p {
+            font-size: 13px;
+            color: #aaaaaa;
+        }
+
+        /* FORM & INPUT */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+        .form-group input, 
+        .form-group textarea {
+            width: 100%;
+            background-color: #000000;
+            color: #ffffff;
+            border: 1px solid #d4af37; /* Border Kuning Emas Sesuai Gambar */
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .form-group input::placeholder, 
+        .form-group textarea::placeholder {
+            color: #555555;
+        }
+        .form-group textarea {
+            resize: none;
+        }
+
+        /* BUTTON SEND THE SONG */
+        .btn-submit {
+            width: 100%;
+            background: none;
+            border: none;
+            color: #d4af37; /* Teks Tombol Kuning Emas */
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: color 0.2s;
+            margin-top: 10px;
+        }
+        .btn-submit:hover {
+            color: #fff3cc;
+        }
+
+        /* BERANDA PESAN (BUBBLE PUBLIK) */
+        .beranda-container {
+            width: 100%;
+            max-width: 520px;
+        }
+        .beranda-title {
+            font-size: 18px;
+            font-weight: 700;
+            border-bottom: 1px solid #222222;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .total-badge {
+            font-size: 11px;
+            background-color: #222222;
+            color: #aaaaaa;
+            padding: 3px 8px;
+            border-radius: 12px;
+        }
+
+        /* WADAH TEMPAT BUBBLE CHAT */
+        .bubble-wall {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 30px 10px;
+            color: #555555;
+            font-size: 13px;
+            border: 1px dashed #222222;
+            border-radius: 12px;
+        }
+
+        /* STYLE BUBBLE CARD PESAN */
+        .bubble-card {
+            border: 1px solid #222222;
+            background-color: #0a0a0a;
+            border-radius: 12px;
+            padding: 16px;
+        }
+        .bubble-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: #888888;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #161616;
+            padding-bottom: 8px;
+        }
+        .meta-users span {
+            margin-right: 8px;
+        }
+        .user-highlight {
+            color: #d4af37;
+            font-weight: 600;
+        }
+        .bubble-message {
+            font-size: 14px;
+            color: #e5e5e5;
+            line-height: 1.5;
+            margin-bottom: 12px;
+            font-style: italic;
+        }
+        .bubble-song {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            background-color: #161616;
+            color: #d4af37;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #222222;
         }
     </style>
 </head>
-<body class="text-white min-h-screen pb-12">
+<body>
 
-    <!-- MAIN CONTAINER FORM (Sesuai Gambar) -->
-    <div class="max-w-xl mx-auto mt-10 px-4">
-        <div class="border border-zinc-700/60 rounded-2xl p-6 md:p-8 bg-zinc-950/40 backdrop-blur-sm">
-            
-            <!-- HEADER -->
-            <div class="text-center mb-8">
-                <h1 class="text-3xl font-bold flex items-center justify-center gap-2 tracking-wide">
-                    <span>♪</span> Song Fess
-                </h1>
-                <p class="text-xs text-zinc-400 mt-1">Sampaikan perasaanmu lewat lagu secara rahasia.</p>
+    <!-- CONTAINER FORM UTAMA -->
+    <div class="form-container">
+        <!-- HEADER -->
+        <div class="header">
+            <h1>♪ Song Fess</h1>
+            <p>Sampaikan perasaanmu lewat lagu secara rahasia.</p>
+        </div>
+
+        <!-- FORM INPUT -->
+        <form id="songfessForm">
+            <!-- FROM -->
+            <div class="form-group">
+                <label>From (Pengirim)</label>
+                <input type="text" id="fromInput" required placeholder="Contoh: Anonim / Rahasia">
             </div>
 
-            <!-- FORM INPUT -->
-            <form id="songfessForm" class="space-y-5">
-                <!-- FROM -->
-                <div>
-                    <label class="block text-xs font-bold tracking-wider text-zinc-300 uppercase mb-1.5">From (Pengirim)</label>
-                    <input type="text" id="fromInput" required placeholder="Contoh: Anonim / Rahasia" 
-                        class="w-full bg-black text-sm text-zinc-200 px-4 py-3 rounded-xl border border-zinc-700 focus:outline-none focus:border-yellow-500/70 transition">
-                </div>
+            <!-- TO -->
+            <div class="form-group">
+                <label>To (Untuk Siapa)</label>
+                <input type="text" id="toInput" required placeholder="Nama si dia...">
+            </div>
 
-                <!-- TO -->
-                <div>
-                    <label class="block text-xs font-bold tracking-wider text-zinc-300 uppercase mb-1.5">To (Untuk Siapa)</label>
-                    <input type="text" id="toInput" required placeholder="Nama si dia..." 
-                        class="w-full bg-black text-sm text-zinc-200 px-4 py-3 rounded-xl border border-zinc-700 focus:outline-none focus:border-yellow-500/70 transition">
-                </div>
+            <!-- SONG -->
+            <div class="form-group">
+                <label>Song (Lagu & Penyanyi)</label>
+                <input type="text" id="songInput" required placeholder="Contoh: Hindia - Evaluasi">
+            </div>
 
-                <!-- SONG -->
-                <div>
-                    <label class="block text-xs font-bold tracking-wider text-zinc-300 uppercase mb-1.5">Song (Lagu & Penyanyi)</label>
-                    <input type="text" id="songInput" required placeholder="Contoh: Hindia - Evaluasi" 
-                        class="w-full bg-black text-sm text-zinc-200 px-4 py-3 rounded-xl border border-zinc-700 focus:outline-none focus:border-yellow-500/70 transition">
-                </div>
+            <!-- MESSAGE -->
+            <div class="form-group">
+                <label>Message (Pesan)</label>
+                <textarea id="messageInput" required rows="4" placeholder="Tuliskan semua perasaanmu di sini..."></textarea>
+            </div>
 
-                <!-- MESSAGE -->
-                <div>
-                    <label class="block text-xs font-bold tracking-wider text-zinc-300 uppercase mb-1.5">Message (Pesan)</label>
-                    <textarea id="messageInput" required rows="4" placeholder="Tuliskan semua perasaanmu di sini..." 
-                        class="w-full bg-black text-sm text-zinc-200 px-4 py-3 rounded-xl border border-zinc-700 focus:outline-none focus:border-yellow-500/70 transition resize-none"></textarea>
-                </div>
+            <!-- SUBMIT BUTTON -->
+            <button type="submit" class="btn-submit">
+                📌 Send the Song
+            </button>
+        </form>
+    </div>
 
-                <!-- SUBMIT BUTTON -->
-                <button type="submit" class="w-full text-yellow-400 font-semibold text-sm py-3 mt-2 flex items-center justify-center gap-2 hover:text-yellow-300 active:scale-95 transition">
-                    📌 Send the Song
-                </button>
-            </form>
+    <!-- BERANDA MENFESS PUBLIK -->
+    <div class="beranda-container">
+        <div class="beranda-title">
+            <span>🗂 Beranda Menfess Terkini</span>
+            <span id="totalPesan" class="total-badge">0 Pesan</span>
+        </div>
 
+        <!-- Wadah Bubble Chat -->
+        <div id="bubbleWall" class="bubble-wall">
+            <!-- Pesan masuk di sini -->
         </div>
     </div>
 
-    <!-- BERANDA MENFESS TERKINI (PUBLIK) -->
-    <div class="max-w-2xl mx-auto mt-12 px-4">
-        <div class="flex items-center justify-between border-b border-zinc-800 pb-3 mb-6">
-            <h2 class="text-lg font-bold tracking-wide flex items-center gap-2">
-                ✉ Beranda Menfess Terkini
-            </h2>
-            <span id="totalPesan" class="text-xs bg-zinc-800 text-zinc-400 px-2.5 py-1 rounded-full">0 Pesan</span>
-        </div>
-
-        <!-- Wadah Tempat Tumpukan Bubble Chat Publik -->
-        <div id="bubbleWall" class="space-y-4">
-            <!-- Pesan publik otomatis masuk ke sini melalui JavaScript -->
-        </div>
-    </div>
-
-    <!-- JAVASCRIPT LOGIKA UTAMA -->
+    <!-- LOGIKA JAVASCRIPT -->
     <script>
         const songfessForm = document.getElementById('songfessForm');
         const fromInput = document.getElementById('fromInput');
@@ -107,53 +250,56 @@
         const bubbleWall = document.getElementById('bubbleWall');
         const totalPesanLabel = document.getElementById('totalPesan');
 
-        // Fungsi memuat data dari localStorage agar bersifat persisten di browser
         function loadMessages() {
-            const messages = JSON.parse(localStorage.getItem('darkSongfessMessages')) || [];
+            const messages = JSON.parse(localStorage.getItem('pureCssSongfess')) || [];
             bubbleWall.innerHTML = '';
             totalPesanLabel.textContent = `${messages.length} Pesan`;
 
             if (messages.length === 0) {
                 bubbleWall.innerHTML = `
-                    <div class="text-center py-10 border border-dashed border-zinc-800 rounded-xl">
-                        <p class="text-sm text-zinc-500">Belum ada menfess publik. Yuk jadi yang pertama mengirim!</p>
+                    <div class="empty-state">
+                        Belum ada menfess publik. Yuk jadi yang pertama mengirim!
                     </div>
                 `;
                 return;
             }
 
-            // Menampilkan dari kiriman paling baru di posisi atas
+            // Tampilkan dari yang paling baru di paling atas
             messages.reverse().forEach(data => {
-                const bubble = document.createElement('div');
-                bubble.className = "p-5 rounded-xl border border-zinc-800 bg-zinc-950/70 bubble-anim shadow-lg";
-                
-                bubble.innerHTML = `
-                    <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-zinc-400 mb-3 border-b border-zinc-900 pb-2">
-                        <div class="flex items-center gap-1.5">
-                            <span class="font-medium text-zinc-300">From:</span>
-                            <span class="text-yellow-400/90 font-semibold bg-zinc-900 px-2 py-0.5 rounded">${data.from}</span>
-                            <span class="font-medium text-zinc-300 ml-1">To:</span>
-                            <span class="text-teal-400 font-semibold bg-zinc-900 px-2 py-0.5 rounded">${data.to}</span>
+                const card = document.createElement('div');
+                card.className = "bubble-card";
+                card.innerHTML = `
+                    <div class="bubble-meta">
+                        <div class="meta-users">
+                            From: <span class="user-highlight">${escapeHtml(data.from)}</span> 
+                            To: <span class="user-highlight">${escapeHtml(data.to)}</span>
                         </div>
-                        <span class="text-[10px] text-zinc-500">${data.time}</span>
+                        <div>${data.time}</div>
                     </div>
-                    <p class="text-sm text-zinc-200 leading-relaxed mb-4 italic">"${data.message}"</p>
-                    <div class="inline-flex items-center gap-2 text-xs bg-zinc-900/80 px-3 py-1.5 rounded-lg border border-zinc-800/60 text-zinc-300">
-                        <span>🎵</span>
-                        <span class="font-medium text-zinc-200">${data.song}</span>
+                    <div class="bubble-message">"${escapeHtml(data.message)}"</div>
+                    <div class="bubble-song">
+                        <span>🎵</span> ${escapeHtml(data.song)}
                     </div>
                 `;
-                bubbleWall.appendChild(bubble);
+                bubbleWall.appendChild(card);
             });
         }
 
-        // Fungsi menangkap submit form kirim lagu
+        // Pengaman karakter HTML agar tidak merusak tampilan web saat diinput teks aneh
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
         songfessForm.addEventListener('submit', function(e) {
             e.preventDefault();
 
-            // Format tanggal & waktu pengiriman
             const now = new Date();
-            const timeString = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' - ' + now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+            const timeString = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' | ' + now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
 
             const newMessage = {
                 from: fromInput.value.trim(),
@@ -163,20 +309,5 @@
                 time: timeString
             };
 
-            // Simpan ke database lokal browser
-            const currentMessages = JSON.parse(localStorage.getItem('darkSongfessMessages')) || [];
+            const currentMessages = JSON.parse(localStorage.getItem('pureCssSongfess')) || [];
             currentMessages.push(newMessage);
-            localStorage.setItem('darkSongfessMessages', JSON.stringify(currentMessages));
-
-            // Reset semua isi kolom input setelah berhasil terkirim
-            songfessForm.reset();
-
-            // Refresh tampilan beranda secara real-time
-            loadMessages();
-        });
-
-        // Panggil fungsi muat pesan saat halaman pertama kali dibuka
-        loadMessages();
-    </script>
-</body>
-</html>
