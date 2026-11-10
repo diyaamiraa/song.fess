@@ -312,3 +312,21 @@
             };
 
             // Simpan data
+// Trigger pengiriman menggunakan Event Listener Klik langsung
+submitBtn.addEventListener('click', function() {
+    // Validasi manual agar input wajib diisi
+    if (!fromInput.value.trim() || !toInput.value.trim() || !songInput.value.trim() || !messageInput.value.trim()) {
+        alert("Harap isi semua kolom terlebih dahulu!");
+        return;
+    }
+
+    const now = new Date();
+    const timeString = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' | ' + now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+
+    const newMessage = {
+        from: fromInput.value.trim(),
+        to: toInput.value.trim(),
+        song: songInput.value.trim(),
+        message: messageInput.value.trim(),
+        time: timeString
+    };
