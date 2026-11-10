@@ -28,10 +28,12 @@
         .image-container {
             margin: 20px 0;
             text-align: center;
-            min-height: 220px;
+            height: 220px;
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
+            z-index: 1; /* Mencegah gambar menutupi tombol menu */
         }
 
         .dynamic-img {
@@ -40,7 +42,6 @@
             object-fit: contain;
             border-radius: 12px;
             box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-            transition: all 0.3s ease;
         }
 
         /* BAR NAVIGASI MENU BUTTONS */
@@ -53,6 +54,8 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             margin-bottom: 35px;
             backdrop-filter: blur(5px);
+            position: relative;
+            z-index: 10; /* Menjamin menu berada paling depan agar bisa diklik */
         }
 
         .menu-btn {
@@ -81,8 +84,10 @@
         .page-content {
             width: 100%;
             max-width: 520px;
-            display: none; /* Tersembunyi di awal masuk */
+            display: none;
             animation: fadeIn 0.4s ease;
+            position: relative;
+            z-index: 5;
         }
 
         .page-content.visible {
@@ -177,7 +182,7 @@
             color: #1db954;
             margin-bottom: 6px;
             font-weight: bold;
-            padding-right: 25px; /* Memberi ruang agar tidak menabrak tombol hapus */
+            padding-right: 25px;
         }
 
         .bubble-song {
@@ -217,8 +222,8 @@
 
     <!-- 1. KOTAK TEMPAT GAMBAR DINAMIS -->
     <div class="image-container">
-        <!-- Tampilan Awal: Gambar Kucing "hi" -->
-        <img id="statusImage" src="https://postimg.co QiMcYC/image.png" alt="Status" class="dynamic-img">
+        <!-- Default awal diisi langsung dengan Link Gambar Kucing "Hi" yang asli -->
+        <img id="statusImage" src="https://phototourl.com" alt="Status" class="dynamic-img">
     </div>
 
     <!-- 2. BAR MENU PILIHAN -->
@@ -271,12 +276,12 @@
         const btnLihat = document.getElementById('btnLihat');
         const form = document.getElementById('songfessForm');
 
-        // ALAMAT CLOUD HOSTING GAMBAR ASLI DARI PENGGUNA
-        const imgHi = "https://squarespace-cdn.com"; // Kucing Hi
-        const imgCat = "https://squarespace-cdn.com"; // Kucing You Can Do This
-        const imgMinion = "https://squarespace-cdn.com"; // Minion Hoverboard
+        // VARIABEL LINK GAMBAR YANG SUDAH TERINTEGRASI ASLI
+        const imgHi = "https://phototourl.com"; // Kucing Hi
+        const imgCat = "https://squarespace-cdn.com"; // Kucing You Can Do This (Cadangan Sementara)
+        const imgMinion = "https://cdn.phototourl.com/member/2026-11-10-39ad4ef4-c4ab-405a-b32a-1e93b0762857.jpg"; // Minion How Bro Felt
 
-        // Set gambar awal secara aman
+        // Memastikan gambar pertama langsung tampil secara fisik sejak awal
         statusImage.src = imgHi;
 
         // FUNGSI GANTI HALAMAN OPSI MENU
@@ -289,7 +294,7 @@
             if (target === 'kirim') {
                 pageKirim.classList.add('visible');
                 btnKirim.classList.add('active');
-                statusImage.src = imgCat; // Ubah ke Gambar Kucing "YOU CAN DO THIS"
+                statusImage.src = imgCat; // Mengubah tampilan gambar ke Kucing "You Can Do This"
             } else if (target === 'lihat') {
                 pageLihat.classList.add('visible');
                 btnLihat.classList.add('active');
@@ -297,7 +302,3 @@
             }
         }
 
-        // FUNGSI LOAD & RENDER BUBBLE CHAT
-        function displayMessages() {
-            const messageWall = document.getElementById('messageWall');
-            messageWall.innerHTML = '';
