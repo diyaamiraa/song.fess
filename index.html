@@ -3,352 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Song Fess Publik Platform</title>
+    <title>Songfess Bubble Wall</title>
+    <!-- Menggunakan Tailwind CSS untuk tampilan yang modern dan bagus -->
+    <script src="https://tailwindcss.com"></script>
+    <link href="https://googleapis.com" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
         body {
-            background: linear-gradient(135deg, #0f0c20 0%, #15102a 100%);
-            color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            padding: 40px 20px;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         }
-
-        .web-title {
-            font-size: 2.2rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            background: linear-gradient(45deg, #1db954, #1ed760);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 5px;
-            text-align: center;
+        /* Efek animasi untuk bubble chat baru */
+        .bubble-anim {
+            animation: popUp 0.4s ease-out forwards;
         }
-
-        .web-subtitle {
-            font-size: 0.9rem;
-            color: #b3b3b3;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        /* BAR NAVIGASI MENU BUTTONS */
-        .nav-menu {
-            display: flex;
-            gap: 15px;
-            background: rgba(255, 255, 255, 0.08);
-            padding: 8px 16px;
-            border-radius: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 35px;
-            backdrop-filter: blur(5px);
-            position: relative;
-            z-index: 10;
-        }
-
-        .menu-btn {
-            background: transparent;
-            color: #b3b3b3;
-            border: none;
-            padding: 10px 20px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            border-radius: 25px;
-            transition: all 0.3s ease;
-        }
-
-        .menu-btn:hover {
-            color: #ffffff;
-        }
-
-        .menu-btn.active {
-            background: #1db954;
-            color: #ffffff;
-            box-shadow: 0 4px 12px rgba(29, 185, 84, 0.3);
-        }
-
-        /* LAYOUT HALAMAN KONTEN */
-        .page-content {
-            width: 100%;
-            max-width: 520px;
-            display: none;
-            animation: fadeIn 0.4s ease;
-            position: relative;
-            z-index: 5;
-        }
-
-        .page-content.visible {
-            display: block;
-        }
-
-        .container {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 35px 25px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-        }
-
-        .header-title {
-            text-align: center;
-            margin-bottom: 25px;
-            font-size: 1.8rem;
-            color: #1db954;
-        }
-
-        .fess-form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .input-group label {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #1db954;
-            text-transform: uppercase;
-        }
-
-        .input-group input, .input-group textarea {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 12px;
-            border-radius: 10px;
-            color: #ffffff;
-            outline: none;
-            font-size: 0.95rem;
-        }
-
-        .input-group input:focus, .input-group textarea:focus {
-            border-color: #1db954;
-        }
-
-        .btn-submit {
-            background: #1db954;
-            color: #ffffff;
-            border: none;
-            padding: 14px;
-            font-size: 1rem;
-            font-weight: 600;
-            border-radius: 10px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(29, 185, 84, 0.3);
-            margin-top: 10px;
-            transition: background 0.2s;
-        }
-
-        .btn-submit:hover { background: #1ed760; }
-
-        /* BUBBLE TIMELINE CHAT */
-        .message-wall {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .bubble {
-            background: rgba(255, 255, 255, 0.08);
-            border-left: 5px solid #1db954;
-            padding: 18px;
-            border-radius: 0 15px 15px 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            position: relative;
-        }
-
-        .bubble-meta {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.8rem;
-            color: #1db954;
-            margin-bottom: 6px;
-            font-weight: bold;
-            padding-right: 25px;
-        }
-
-        .bubble-song {
-            background: rgba(29, 185, 84, 0.15);
-            color: #1ed760;
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            margin-bottom: 8px;
-        }
-
-        /* TOMBOL HAPUS BUBBLE */
-        .btn-delete {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: transparent;
-            border: none;
-            color: #ff4d4d;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: transform 0.2s;
-            display: none;
-        }
-
-        .btn-delete.my-message {
-            display: block; /* Hanya muncul di perangkat milik si pengirim asli */
-        }
-
-        .btn-delete:hover {
-            transform: scale(1.2);
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes popUp {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
         }
     </style>
 </head>
-<body>
+<body class="min-h-screen text-gray-800">
 
-    <!-- JUDUL UTAMA ATAS HALAMAN -->
-    <h1 class="web-title">🎵 Song Fess</h1>
-    <p class="web-subtitle">Sampaikan perasaanmu lewat lagu secara rahasia.</p>
-
-    <!-- BAR MENU PILIHAN -->
-    <div class="nav-menu">
-        <button id="btnKirim" class="menu-btn" onclick="switchPage('kirim')">📝 Kirim Pesan</button>
-        <button id="btnLihat" class="menu-btn" onclick="switchPage('lihat')">📩 Lihat Bubble</button>
-    </div>
-
-    <!-- HALAMAN OPSI 1: FORM KIRIM PESAN -->
-    <div id="pageKirim" class="page-content">
-        <div class="container">
-            <h2 class="header-title">Send a Songfess</h2>
-            <form id="songfessForm" class="fess-form">
-                <div class="input-group">
-                    <label>From (Pengirim)</label>
-                    <input type="text" id="from" placeholder="Anonim / Rahasia" required>
-                </div>
-                <div class="input-group">
-                    <label>To (Untuk Siapa)</label>
-                    <input type="text" id="to" placeholder="Nama target si dia..." required>
-                </div>
-                <div class="input-group">
-                    <label>Song (Lagu & Artis)</label>
-                    <input type="text" id="song" placeholder="Contoh: Hindia - Evaluasi" required>
-                </div>
-                <div class="input-group">
-                    <label>Message (Pesan Rahasia)</label>
-                    <textarea id="message" rows="4" placeholder="Tulis ungkapan hatimu..." required></textarea>
-                </div>
-                <button type="submit" class="btn-submit">🚀 Send the Song</button>
-            </form>
+    <!-- NAVBAR -->
+    <nav class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-200">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">
+                🎵 SongfessBubble
+            </h1>
+            <a href="#kirim-pesan" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-full text-sm font-medium transition duration-300 shadow-md">
+                Kirim Menfess
+            </a>
         </div>
-    </div>
+    </nav>
 
-    <!-- HALAMAN OPSI 2: BERANDA TIMELINE BUBBLE CHAT -->
-    <div id="pageLihat" class="page-content">
-        <div class="container">
-            <h2 class="header-title" style="color: #1ed760;">📩 Timeline Menfess Publik</h2>
-            <div id="messageWall" class="message-wall"></div>
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- KOLOM KIRI: FORM KIRIM PESAN -->
+        <div id="kirim-pesan" class="lg:col-span-1">
+            <div class="bg-white p-6 rounded-2xl shadow-xl sticky top-20 border border-gray-100">
+                <h2 class="text-xl font-bold mb-2 text-purple-700">Kirim Pesan Anonim</h2>
+                <p class="text-xs text-gray-500 mb-6">Bagikan lagu favorit atau pesan rahasiamu. Semua orang bisa melihatnya secara anonim!</p>
+                
+                <form id="songfessForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Judul Lagu / Penyanyi</label>
+                        <input type="text" id="songInput" required placeholder="Contoh: Cinta Luar Biasa - Andmesh" 
+                            class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:outline-none transition">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Pesan Anonim</label>
+                        <textarea id="messageInput" required rows="4" placeholder="Tulis pesan rahasiamu di sini..." 
+                            class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:outline-none transition resize-none"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-semibold py-3 rounded-xl shadow-lg transition duration-300 transform active:scale-95">
+                        Kirim ke Beranda ✨
+                    </button>
+                </form>
+            </div>
         </div>
-    </div>
 
-    <!-- LOAD ENGINE DATABASE ONLINE PUBLIK -->
-    <script src="https://gstatic.com"></script>
-    <script src="https://gstatic.com"></script>
+        <!-- KOLOM KANAN: BERANDA BUBBLE PESAN (PUBLIK) -->
+        <div class="lg:col-span-2">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Beranda Pesan</h2>
+                <span id="totalPesan" class="bg-purple-100 text-purple-800 text-xs font-semibold px-3 py-1 rounded-full">0 Pesan</span>
+            </div>
 
+            <!-- Wadah Bubble Chat -->
+            <div id="bubbleWall" class="space-y-4 max-h-[80vh] overflow-y-auto pr-2">
+                <!-- Pesan akan muncul di sini secara dinamis -->
+            </div>
+        </div>
+
+    </main>
+
+    <!-- JAVASCRIPT & LOGIKA -->
     <script>
-        // KONEKSI DATABASE ONLINE PUBLIK
-        const firebaseConfig = {
-            databaseURL: "https://firebasedatabase.app"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+        const songfessForm = document.getElementById('songfessForm');
+        const songInput = document.getElementById('songInput');
+        const messageInput = document.getElementById('messageInput');
+        const bubbleWall = document.getElementById('bubbleWall');
+        const totalPesanLabel = document.getElementById('totalPesan');
 
-        const pageKirim = document.getElementById('pageKirim');
-        const pageLihat = document.getElementById('pageLihat');
-        const btnKirim = document.getElementById('btnKirim');
-        const btnLihat = document.getElementById('btnLihat');
-        const form = document.getElementById('songfessForm');
+        // Pilihan warna estetik pastel untuk bubble chat secara acak
+        const bubbleColors = [
+            'bg-purple-50 border-purple-200 text-purple-900',
+            'bg-pink-50 border-pink-200 text-pink-900',
+            'bg-blue-50 border-blue-200 text-blue-900',
+            'bg-indigo-50 border-indigo-200 text-indigo-900',
+            'bg-teal-50 border-teal-200 text-teal-900'
+        ];
 
-        // Buka halaman kirim secara default saat pertama kali masuk web
-        switchPage('kirim');
+        // 1. Fungsi untuk mengambil dan menampilkan pesan dari LocalStorage
+        function loadMessages() {
+            const messages = JSON.parse(localStorage.getItem('songfessMessages')) || [];
+            bubbleWall.innerHTML = '';
+            totalPesanLabel.textContent = `${messages.length} Pesan`;
 
-        // ID Unik Perangkat pembatas hak hapus pesan milik sendiri
-        if(!localStorage.getItem('my_user_id')) {
-            localStorage.setItem('my_user_id', 'user_' + Math.random().toString(36).substr(2, 9));
-        }
-        const myUserId = localStorage.getItem('my_user_id');
-
-        function switchPage(target) {
-            btnKirim.classList.remove('active');
-            btnLihat.classList.remove('active');
-            pageKirim.classList.remove('visible');
-            pageLihat.classList.remove('visible');
-
-            if (target === 'kirim') {
-                pageKirim.classList.add('visible');
-                btnKirim.classList.add('active');
-            } else if (target === 'lihat') {
-                pageLihat.classList.add('visible');
-                btnLihat.classList.add('active');
+            if (messages.length === 0) {
+                bubbleWall.innerHTML = `
+                    <div class="text-center py-12 bg-white/50 backdrop-blur rounded-2xl border-2 border-dashed border-gray-300">
+                        <p class="text-gray-500">Belum ada pesan nih. Jadi yang pertama mengirim!</p>
+                    </div>
+                `;
+                return;
             }
+
+            // Tampilkan dari yang paling baru (diatas)
+            messages.reverse().forEach(data => {
+                const bubble = document.createElement('div');
+                // Mengacak warna bubble
+                const randomColor = bubbleColors[data.colorIndex || 0];
+                
+                bubble.className = `p-5 rounded-2xl border shadow-sm bubble-anim ${randomColor}`;
+                bubble.innerHTML = `
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-semibold uppercase tracking-wider bg-white/80 px-2 py-0.5 rounded-md shadow-xs text-gray-600">
+                            👤 Anonim
+                        </span>
+                        <span class="text-[10px] text-gray-500">${data.time}</span>
+                    </div>
+                    <p class="text-base font-medium mb-3 italic">"${data.message}"</p>
+                    <div class="flex items-center gap-2 text-xs bg-white/60 p-2 rounded-xl w-fit">
+                        <span>🎵</span>
+                        <span class="font-semibold text-gray-700">${data.song}</span>
+                    </div>
+                `;
+                bubbleWall.appendChild(bubble);
+            });
         }
 
-        // AMBIL DATA REALTIME DARI DATABASE INTERNET
-        database.ref('messages').on('value', (snapshot) => {
-            const messageWall = document.getElementById('messageWall');
-            messageWall.innerHTML = '';
-            const dataObj = snapshot.val();
+        // 2. Fungsi saat User Mengirim Pesan
+        songfessForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const songText = songInput.value.trim();
+            const messageText = messageInput.value.trim();
             
-Gunakan kode dengan hati-hati.
-if(!dataObj) {
-messageWall.innerHTML = 'Belum ada menfess publik masuk.';
-return;
-}
-const messagesList = Object.keys(dataObj).map(key => ({ id: key, ...dataObj[key] })).reverse();
-messagesList.forEach((data) => {
-const bubble = document.createElement('div');
-bubble.className = 'bubble';
-const deleteClass = (data.senderId === myUserId) ? 'my-message' : '';
-bubble.innerHTML = <button class="btn-delete ${deleteClass}" onclick="deleteMessage('${data.id}')" title="Hapus pesan saya">🗑️</button> <div class="bubble-meta"> <span>Dari: ${escapeHTML(data.from)}</span> <span>Untuk: ${escapeHTML(data.to)}</span> </div> <div class="bubble-song">🎵 ${escapeHTML(data.song)}</div> <p style="color:#e0e0e0; font-size:0.95rem; line-height:1.4; word-wrap:break-word;">${escapeHTML(data.message)}</p>;
-messageWall.appendChild(bubble);
-});
-});
-function deleteMessage(msgId) {
-if (confirm("Apakah Anda yakin ingin menghapus bubble pesan ini secara permanen dari publik?")) {
-database.ref('messages/' + msgId).remove();
-}
-}
-function escapeHTML(str) {
-return str.replace(/[&<>'"]/g, tag => ({ '&': '&', '<': '<', '>': '>', "'": ''', '"': '"' }[tag] || tag));
-}
-form.addEventListener('submit', function(e) {
-e.preventDefault();
-const fromVal = document.getElementById('from').value;
-const toVal = document.getElementById('to').value;
-const songVal = document.getElementById('song').value;
-const messageVal = document.getElementById('message').value;
-const newMessageRef = database.ref('messages').push();
-newMessageRef.set({
-from: fromVal,
-to: toVal,
-song: songVal,
-message: messageVal,
-senderId: myUserId
-});
-form.reset();
-alert('Pesan Song Fess Publik Berhasil Dikirim! Silakan cek menu "Lihat Bubble".');
-});
+            // Format waktu saat ini
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' | ' + now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+
+            // Acak index warna
+            const randomColorIndex = Math.floor(Math.random() * bubbleColors.length);
+
+            const newMessage = {
+                song: songText,
+                message: messageText,
+                time: timeString,
+                colorIndex: randomColorIndex
+            };
+
+            // Simpan ke LocalStorage publik browser
+            const currentMessages = JSON.parse(localStorage.getItem('songfessMessages')) || [];
+            currentMessages.push(newMessage);
+            localStorage.setItem('songfessMessages', JSON.stringify(currentMessages));
+
+            // Reset Form setelah kirim
+            songfessForm.reset();
+
+            // Refresh beranda web agar langsung muncul pesan barunya
+            loadMessages();
+
+            // Scroll otomatis ke atas beranda pesan
+            bubbleWall.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Jalankan fungsi load pertama kali web dibuka
+        loadMessages();
+    </script>
+</body>
+</html>
