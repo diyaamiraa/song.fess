@@ -193,37 +193,31 @@
             <p>Sampaikan perasaanmu lewat lagu secara rahasia.</p>
         </div>
 
-        <!-- FORM INPUT -->
-        <form id="songfessForm">
-            <!-- FROM -->
-            <div class="form-group">
-                <label>From (Pengirim)</label>
-                <input type="text" id="fromInput" required placeholder="Contoh: Anonim / Rahasia">
-            </div>
+        <!-- INPUT FIELDS (Tanpa tag form untuk mencegah auto-refresh) -->
+        <div class="form-group">
+            <label>From (Pengirim)</label>
+            <input type="text" id="fromInput" placeholder="Contoh: Anonim / Rahasia">
+        </div>
 
-            <!-- TO -->
-            <div class="form-group">
-                <label>To (Untuk Siapa)</label>
-                <input type="text" id="toInput" required placeholder="Nama si dia...">
-            </div>
+        <div class="form-group">
+            <label>To (Untuk Siapa)</label>
+            <input type="text" id="toInput" placeholder="Nama si dia...">
+        </div>
 
-            <!-- SONG -->
-            <div class="form-group">
-                <label>Song (Lagu & Penyanyi)</label>
-                <input type="text" id="songInput" required placeholder="Contoh: Hindia - Evaluasi">
-            </div>
+        <div class="form-group">
+            <label>Song (Lagu & Penyanyi)</label>
+            <input type="text" id="songInput" placeholder="Contoh: Hindia - Evaluasi">
+        </div>
 
-            <!-- MESSAGE -->
-            <div class="form-group">
-                <label>Message (Pesan)</label>
-                <textarea id="messageInput" required rows="4" placeholder="Tuliskan semua perasaanmu di sini..."></textarea>
-            </div>
+        <div class="form-group">
+            <label>Message (Pesan)</label>
+            <textarea id="messageInput" rows="4" placeholder="Tuliskan semua perasaanmu di sini..."></textarea>
+        </div>
 
-            <!-- SUBMIT BUTTON -->
-            <button type="submit" class="btn-submit">
-                📌 Send the Song
-            </button>
-        </form>
+        <!-- BUTTON DENGAN ONCLICK JAVASCRIPT -->
+        <button type="button" id="submitBtn" class="btn-submit">
+            📌 Send the Song
+        </button>
     </div>
 
     <!-- BERANDA MENFESS PUBLIK -->
@@ -233,24 +227,25 @@
             <span id="totalPesan" class="total-badge">0 Pesan</span>
         </div>
 
-        <!-- Wadah Bubble Chat -->
+        <!-- Wadah Tempat Bubble Chat -->
         <div id="bubbleWall" class="bubble-wall">
             <!-- Pesan masuk di sini -->
         </div>
     </div>
 
-    <!-- LOGIKA JAVASCRIPT -->
+    <!-- LOGIKA JAVASCRIPT MURNI -->
     <script>
-        const songfessForm = document.getElementById('songfessForm');
         const fromInput = document.getElementById('fromInput');
         const toInput = document.getElementById('toInput');
         const songInput = document.getElementById('songInput');
         const messageInput = document.getElementById('messageInput');
         const bubbleWall = document.getElementById('bubbleWall');
         const totalPesanLabel = document.getElementById('totalPesan');
+        const submitBtn = document.getElementById('submitBtn');
 
+        // Fungsi menampilkan pesan ke layar beranda bubble
         function loadMessages() {
-            const messages = JSON.parse(localStorage.getItem('pureCssSongfess')) || [];
+            const messages = JSON.parse(localStorage.getItem('pureCssSongfessFix')) || [];
             bubbleWall.innerHTML = '';
             totalPesanLabel.textContent = `${messages.length} Pesan`;
 
@@ -263,7 +258,7 @@
                 return;
             }
 
-            // Memperbaiki bug duplikasi/hilang menggunakan .slice().reverse()
+            // Urutkan dari yang terbaru ke terlama
             const reversedMessages = messages.slice().reverse();
 
             reversedMessages.forEach(data => {
@@ -286,6 +281,7 @@
             });
         }
 
+        // Pengaman input teks
         function escapeHtml(text) {
             if (!text) return '';
             return text
@@ -296,8 +292,13 @@
                 .replace(/'/g, "&#039;");
         }
 
-        songfessForm.addEventListener('submit', function(e) {
-            e.preventDefault();
+        // Trigger pengiriman menggunakan Event Listener Klik langsung
+        submitBtn.addEventListener('click', function() {
+            // Validasi manual agar input wajib diisi
+            if (!fromInput.value.trim() || !toInput.value.trim() || !songInput.value.trim() || !messageInput.value.trim()) {
+                alert("Harap isi semua kolom terlebih dahulu!");
+                return;
+            }
 
             const now = new Date();
             const timeString = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' | ' + now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
@@ -310,7 +311,4 @@
                 time: timeString
             };
 
-            const currentMessages = JSON.parse(localStorage.getItem('pureCssSongfess')) || [];
-            currentMessages.push(newMessage);
-            localStorage.setItem('pureCssSongfess', JSON.stringify(currentMessages));
-
+            // Simpan data
