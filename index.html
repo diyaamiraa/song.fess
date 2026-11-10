@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Songfess - Kirim Pesan Rahasia & Lagu</title>
+    <title>Songfess Menfess</title>
     <style>
         /* --- CSS STYLING --- */
         :root {
@@ -199,7 +199,7 @@
 
     <header>
         <h1>Songfess Menfess</h1>
-        <p>Kirim pesan & lagu secara anonim. Semua orang bisa membaca.</p>
+        <p>Kirim pesan & lagu secara anonim.</p>
     </header>
 
     <div class="container">
@@ -223,7 +223,7 @@
                     <label for="messageInput">Message:</label>
                     <textarea id="messageInput" placeholder="Tuliskan pesan rahasiamu di sini..." required></textarea>
                 </div>
-                <button type="submit">Kirim Pesan Publik 🚀</button>
+                <button type="submit">Kirim!</button>
             </form>
         </section>
 
@@ -231,84 +231,88 @@
         <section class="feed-section">
             <h2>Beranda Songfess Terkini</h2>
             <div class="bubble-container" id="bubbleContainer">
-                <!-- Pesan akan masuk ke sini melalui Javascript -->
+                <p class="no-message">Menghubungkan ke database publik...</p>
             </div>
         </section>
     </div>
 
-    <!-- --- JAVASCRIPT --- -->
-    <script>
+    <!-- --- JAVASCRIPT & DATABASE INTEGRATION --- -->
+    <!-- Mengimpor Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://gstatic.com";
+        import { getDatabase, ref, push, onValue } from "https://gstatic.com";
+
+        // Konfigurasi Firebase Publik Demo (Murni anonim, siap pakai)
+        const firebaseConfig = {
+            databaseURL: "https://firebasedatabase.app"
+        };
+
+        // Inisialisasi Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const messagesRef = ref(db, 'messages');
+
         const songfessForm = document.getElementById('songfessForm');
         const bubbleContainer = document.getElementById('bubbleContainer');
 
-        // Fungsi mengambil pesan dari LocalStorage
-        function getMessages() {
-            const messages = localStorage.getItem('songfess_messages');
-            return messages ? JSON.parse(messages) : [];
-        }
-
-        // Fungsi menampilkan semua pesan ke beranda
-        function displayMessages() {
-            const messages = getMessages();
-            bubbleContainer.innerHTML = ''; // Kosongkan kontainer terlebih dahulu
-
-            if (messages.length === 0) {
-                bubbleContainer.innerHTML = '<p class="no-message">Belum ada pesan masuk. Jadilah yang pertama mengirim!</p>';
-                return;
-            }
-
-            // Urutkan dari yang paling baru di atas
-            messages.reverse().forEach(data => {
-                const bubble = document.createElement('div');
-                bubble.classList.add('bubble-card');
-                
-                bubble.innerHTML = `
-                    <div class="bubble-header">
-                        <span><strong>From:</strong> ${escapeHTML(data.from)}</span>
-                        <span><strong>To:</strong> ${escapeHTML(data.to)}</span>
-                    </div>
-                    <div class="song-tag">${escapeHTML(data.song)}</div>
-                    <div class="message-content">
-                        ${escapeHTML(data.message).replace(/\n/g, '<br>')}
-                    </div>
-                `;
-                bubbleContainer.appendChild(bubble);
-            });
-        }
-
-        // Fungsi mengamankan teks input dari serangan XSS
+        // Fungsi mengamankan teks input dari serangan XSS (Hacker jail)
         function escapeHTML(str) {
             return str.replace(/[&<>'"]/g, 
                 tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
             );
         }
 
-        // Event listener saat form dikirim
+        // KONTROL 1: Mendengarkan database secara Real-Time (Antar HP/Laptop langsung sinkron)
+        onValue(messagesRef, (snapshot) => {
+            bubbleContainer.innerHTML = '';
+            const data = snapshot.val();
+
+            if (!data) {
+                bubbleContainer.innerHTML = '<p class="no-message">Belum ada pesan masuk. Jadilah yang pertama mengirim!</p>';
+                return;
+            }
+
+            // Mengubah objek database menjadi array dan diurutkan dari yang paling baru
+            const messageList = Object.keys(data).map(key => data[key]).reverse();
+
+            messageList.forEach(item => {
+                const bubble = document.createElement('div');
+                bubble.classList.add('bubble-card');
+                
+                bubble.innerHTML = `
+                    <div class="bubble-header">
+                        <span><strong>From:</strong> ${escapeHTML(item.from)}</span>
+                        <span><strong>To:</strong> ${escapeHTML(item.to)}</span>
+                    </div>
+                    <div class="song-tag">${escapeHTML(item.song)}</div>
+                    <div class="message-content">
+                        ${escapeHTML(item.message).replace(/\n/g, '<br>')}
+                    </div>
+                `;
+                bubbleContainer.appendChild(bubble);
+            });
+        });
+
+        // KONTROL 2: Event listener saat form dikirim (Memasukkan data ke cloud internet)
         songfessForm.addEventListener('submit', function(e) {
             e.preventDefault();
 
-            // Ambil data nilai dari form
             const from = document.getElementById('fromInput').value;
             const to = document.getElementById('toInput').value;
             const song = document.getElementById('songInput').value;
             const message = document.getElementById('messageInput').value;
 
-            const newSongfess = { from, to, song, message };
+            // Mengirim data ke Firebase cloud database
+            push(messagesRef, {
+                from: from,
+                to: to,
+                song: song,
+                message: message
+});
 
-            // Simpan ke array local storage
-            const currentMessages = getMessages();
-            currentMessages.push(newSongfess);
-            localStorage.setItem('songfess_messages', JSON.stringify(currentMessages));
-
-            // Reset form input
+            // Reset form input setelah sukses terkirim
             songfessForm.reset();
-
-            // Refresh beranda tampilan secara instan
-            displayMessages();
-        });
-
-        // Tampilkan pesan pertama kali saat web dibuka
-        displayMessages();
+        }); 
     </script>
 </body>
 </html>
