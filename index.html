@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Song Fess - Kirim Lagu & Pesan Anonim</title>
+    <!-- Menggunakan font estetik dari Google Fonts -->
+    <link href="https://googleapis.com" rel="stylesheet">
+    
+    <!-- KODE DESAIN WARNA (CSS) SUDAH DIGABUNG DI SINI AGAR TIDAK POLOS -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f0c20 0%, #15102a 100%);
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 40px 30px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: linear-gradient(45deg, #1db954, #1ed760);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            font-size: 0.9rem;
+            color: #b3b3b3;
+            margin-top: 5px;
+        }
+
+        .fess-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #1db954;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group input, 
+        .input-group textarea {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 15px;
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus, 
+        .input-group textarea:focus {
+            border-color: #1db954;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 10px rgba(29, 185, 84, 0.2);
+        }
+
+        .input-group textarea {
+            resize: none;
+        }
+
+        .btn-submit {
+            background: #1db954;
+            color: #ffffff;
+            border: none;
+            padding: 15px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(29, 185, 84, 0.4);
+        }
+
+        .btn-submit:hover {
+            background: #1ed760;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(29, 185, 84, 0.6);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.75rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>🎵 Song Fess</h1>
+            <p>Sampaikan perasaanmu lewat lagu secara rahasia.</p>
+        </div>
+
+        <!-- Formulir Pengiriman Pesan (Bisa dihubungkan ke Formspree nanti) -->
+        <form action="https://formspree.io" method="POST" class="fess-form">
+            
+            <!-- FORMAT 1: FROM -->
+            <div class="input-group">
+                <label for="from">From (Pengirim)</label>
+                <input type="text" id="from" name="From" placeholder="Contoh: Anonim / Rahasia" required>
+            </div>
+
+            <!-- FORMAT 2: TO -->
+            <div class="input-group">
+                <label for="to">To (Untuk Siapa)</label>
+                <input type="text" id="to" name="To" placeholder="Nama si dia..." required>
+            </div>
+
+            <!-- FORMAT 3: SONG (DIKETIK MANUAL) -->
+            <div class="input-group">
+                <label for="song">Song (Lagu & Penyanyi)</label>
+                <input type="text" id="song" name="Song" placeholder="Contoh: Hindia - Evaluasi" required>
+            </div>
+
+            <!-- FORMAT 4: MESSAGE -->
+            <div class="input-group">
+                <label for="message">Message (Pesan)</label>
+                <textarea id="message" name="Message" rows="5" placeholder="Tuliskan semua perasaanmu di sini..." required></textarea>
+            </div>
+
+            <!-- TOMBOL KIRIM -->
+            <button type="submit" class="btn-submit">🚀 Send the Song</button>
+        </form>
+
+        <div class="footer">
+            <p>&copy; 2026 Song Fess Platform. Made with 🤍</p>
+        </div>
+    </div>
+
+</body>
+</html>
