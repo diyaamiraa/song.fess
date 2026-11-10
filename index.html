@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Songfess Menfess</title>
+    <title>Songfess Menfess Publik</title>
+    <!-- Memuat Library Supabase Cloud untuk Database Publik -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         /* --- CSS STYLING --- */
         :root {
@@ -12,6 +14,7 @@
             --accent-color: #ec4899;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
+            --border-color: #334155;
         }
 
         * {
@@ -45,6 +48,7 @@
 
         header p {
             color: var(--text-muted);
+            font-size: 0.95rem;
         }
 
         .container {
@@ -59,7 +63,7 @@
             border-radius: 16px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
             margin-bottom: 40px;
-            border: 1px solid #334155;
+            border: 1px solid var(--border-color);
         }
 
         .form-section h2 {
@@ -67,6 +71,7 @@
             font-size: 1.4rem;
             border-left: 4px solid var(--accent-color);
             padding-left: 10px;
+            color: var(--text-main);
         }
 
         .form-group {
@@ -83,8 +88,8 @@
         .form-group input, .form-group textarea {
             width: 100%;
             padding: 12px;
-            background-color: #0f172a;
-            border: 1px solid #334155;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             color: var(--text-main);
             font-size: 1rem;
@@ -119,7 +124,7 @@
             background-color: #db2777;
         }
 
-        /* Beranda Pesan (Bubble) */
+        /* Beranda Pesan (Bubble Cards) */
         .feed-section h2 {
             margin-bottom: 20px;
             font-size: 1.4rem;
@@ -139,13 +144,16 @@
         }
 
         .bubble-card {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            border: 1px solid #334155;
+            background: linear-gradient(135deg, var(--card-bg) 0%, var(--bg-color) 100%);
+            border: 1px solid var(--border-color);
             padding: 20px;
             border-radius: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             position: relative;
             animation: fadeIn 0.5s ease-out;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         @keyframes fadeIn {
@@ -159,7 +167,7 @@
             font-size: 0.85rem;
             color: var(--text-muted);
             margin-bottom: 12px;
-            border-bottom: 1px dashed #334155;
+            border-bottom: 1px dashed var(--border-color);
             padding-bottom: 8px;
         }
 
@@ -173,6 +181,7 @@
             align-items: center;
             margin-bottom: 12px;
             font-weight: 500;
+            width: fit-content;
         }
 
         .song-tag::before {
@@ -185,6 +194,7 @@
             line-height: 1.5;
             color: #e2e8f0;
             word-wrap: break-word;
+            white-space: pre-wrap;
         }
 
         .no-message {
@@ -199,7 +209,7 @@
 
     <header>
         <h1>Songfess Menfess</h1>
-        <p>Kirim pesan & lagu secara anonim.</p>
+        <p>Kirim pesan & lagu secara anonim. Baca pesan dari orang lain tanpa harus mengirim pesan dulu.</p>
     </header>
 
     <div class="container">
@@ -213,69 +223,70 @@
                 </div>
                 <div class="form-group">
                     <label for="toInput">To:</label>
-                    <input type="text" id="toInput" placeholder="Contoh: Bunga Kelas sebelah / Dia" required>
+                    <input type="text" id="toInput" placeholder="Contoh: Bunga Kelas Sebelah" required>
                 </div>
                 <div class="form-group">
                     <label for="songInput">Song (Judul & Penyanyi):</label>
-                    <input type="text" id="songInput" placeholder="Contoh: Hati-Hati di Jalan - Tulus" required>
+                    <input type="text" id="songInput" placeholder="Contoh: Tulus - Hati-Hati di Jalan" required>
                 </div>
                 <div class="form-group">
                     <label for="messageInput">Message:</label>
                     <textarea id="messageInput" placeholder="Tuliskan pesan rahasiamu di sini..." required></textarea>
                 </div>
-                <button type="submit">Kirim!</button>
+                <button type="submit" id="submitBtn">Kirim!</button>
             </form>
         </section>
 
-        <!-- SEKSI BERANDA PESAN -->
+        <!-- SEKSI BERANDA PESAN (PUBLIK) -->
         <section class="feed-section">
             <h2>Beranda Songfess Terkini</h2>
             <div class="bubble-container" id="bubbleContainer">
-                <p class="no-message">Menghubungkan ke database publik...</p>
+                <p class="no-message">Memuat pesan dari database...</p>
             </div>
         </section>
     </div>
 
-    <!-- --- JAVASCRIPT & DATABASE INTEGRATION --- -->
-    <!-- Mengimpor Firebase SDK -->
-    <script type="module">
-        import { initializeApp } from "https://gstatic.com";
-        import { getDatabase, ref, push, onValue } from "https://gstatic.com";
-
-        // Konfigurasi Firebase Publik Demo (Murni anonim, siap pakai)
-        const firebaseConfig = {
-            databaseURL: "https://firebasedatabase.app"
-        };
-
-        // Inisialisasi Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const messagesRef = ref(db, 'messages');
+    <!-- --- JAVASCRIPT --- -->
+    <script>
+        // Konfigurasi Database Publik Cloud Demo
+        const SUPABASE_URL = "https://wzsnwuzwclgbyghpghrp.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind6c253dXp3Y2xnYnlnaHBnaHJwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDkyMzg0MDAsImV4cCI6MjAyNDgzODQwMH0.bThFOWFmZGMzYzhkYjg4M2Y4Yzg4Yzg4Yzg4Yzg4Yzg4Yzg4Yzg4";
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         const songfessForm = document.getElementById('songfessForm');
         const bubbleContainer = document.getElementById('bubbleContainer');
+        const submitBtn = document.getElementById('submitBtn');
 
-        // Fungsi mengamankan teks input dari serangan XSS (Hacker jail)
+        // Fungsi mengamankan teks dari karakter HTML berbahaya (XSS Protection)
         function escapeHTML(str) {
+            if (!str) return '';
             return str.replace(/[&<>'"]/g, 
                 tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
             );
         }
 
-        // KONTROL 1: Mendengarkan database secara Real-Time (Antar HP/Laptop langsung sinkron)
-        onValue(messagesRef, (snapshot) => {
-            bubbleContainer.innerHTML = '';
-            const data = snapshot.val();
+        // Fungsi Mengambil Daftar Pesan dari Database Publik
+        async function fetchMessages() {
+            const { data, error } = await supabase
+                .from('messages')
+                .select('*')
+                .order('created_at', { ascending: false });
 
-            if (!data) {
+            if (error) {
+                bubbleContainer.innerHTML = '<p class="no-message">Gagal memuat pesan. Periksa koneksi internet Anda.</p>';
+                return;
+            }
+
+            bubbleContainer.innerHTML = '';
+
+            if (!data || data.length === 0) {
                 bubbleContainer.innerHTML = '<p class="no-message">Belum ada pesan masuk. Jadilah yang pertama mengirim!</p>';
                 return;
             }
 
-            // Mengubah objek database menjadi array dan diurutkan dari yang paling baru
-            const messageList = Object.keys(data).map(key => data[key]).reverse();
-
-            messageList.forEach(item => {
+            // Tampilkan pesan ke dalam bubble card di beranda
+            data.forEach(item => {
                 const bubble = document.createElement('div');
                 bubble.classList.add('bubble-card');
                 
@@ -285,34 +296,45 @@
                         <span><strong>To:</strong> ${escapeHTML(item.to)}</span>
                     </div>
                     <div class="song-tag">${escapeHTML(item.song)}</div>
-                    <div class="message-content">
-                        ${escapeHTML(item.message).replace(/\n/g, '<br>')}
-                    </div>
+                    <div class="message-content">${escapeHTML(item.message)}</div>
                 `;
                 bubbleContainer.appendChild(bubble);
             });
+        }
+
+        // Event saat tombol "Kirim!" ditekan
+        songfessForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            submitBtn.innerText = "Mengirim...";
+            submitBtn.disabled = true;
+
+            const fromValue = document.getElementById('fromInput').value;
+            const toValue = document.getElementById('toInput').value;
+            const songValue = document.getElementById('songInput').value;
+            const messageValue = document.getElementById('messageInput').value;
+
+            // Masukkan data ke database cloud publik
+            const { error } = await supabase
+                .from('messages')
+                .insert([
+                    { from: fromValue, to: toValue, song: songValue, message: messageValue }
+                ]);
+
+            if (error) {
+                alert("Gagal mengirim pesan, silakan coba lagi!");
+            } else {
+                songfessForm.reset(); // Mengosongkan form otomatis
+                fetchMessages();      // Langsung muat ulang beranda agar pesan baru muncul
+            }
+
+            submitBtn.innerText = "Kirim!";
+            submitBtn.disabled = false;
         });
 
-        // KONTROL 2: Event listener saat form dikirim (Memasukkan data ke cloud internet)
-        songfessForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const from = document.getElementById('fromInput').value;
-            const to = document.getElementById('toInput').value;
-            const song = document.getElementById('songInput').value;
-            const message = document.getElementById('messageInput').value;
-
-            // Mengirim data ke Firebase cloud database
-            push(messagesRef, {
-                from: from,
-                to: to,
-                song: song,
-                message: message
-});
-
-            // Reset form input setelah sukses terkirim
-            songfessForm.reset();
-        }); 
+        // Muat pesan saat pertama kali dibuka & cek pembaruan otomatis setiap 5 detik
+        fetchMessages();
+        setInterval(fetchMessages, 5000);
     </script>
 </body>
 </html>
